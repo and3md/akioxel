@@ -10,7 +10,7 @@ type Game* = ref object of RootObj
 
 var instance: Game
 
-proc getGame*(): Game  =
+proc getGame*(): Game =
   if instance.isNil:
     raise newException(ValueError, "No game instance")
   return instance
