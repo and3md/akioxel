@@ -32,3 +32,7 @@ proc run*(game: Game) =
 
 proc title*(game: Game): string =
   return game.title
+
+proc `title=`*(game: Game, newTitle: string) =
+  ray.setWindowTitle(newTitle)
+  game.title = newTitle
