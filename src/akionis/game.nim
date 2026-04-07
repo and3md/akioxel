@@ -30,5 +30,5 @@ proc run*(game: Game) =
     ray.clearBackground(ray.DarkGray)
     ray.endDrawing()
 
-proc title(game: Game): string =
+proc title*(game: Game): string =
   return game.title
