@@ -7,6 +7,6 @@
 
 import unittest
 
-import akioxel
+import akionis
 test "can add":
   check add(5, 5) == 10
