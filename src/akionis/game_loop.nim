@@ -6,10 +6,12 @@
 from raylib as ray import nil
 import base_types
 
-proc run*(game: Game) =
+proc run*(game: Game, state: State) =
   ## Runs the game loop 
+  
+  game.openRootState(state)
   while not ray.windowShouldClose():
-    updateGame(game, ray.getFrameTime())
+    game.updateGame(ray.getFrameTime())
     ray.beginDrawing()
     ray.clearBackground(ray.DarkGray)
     ray.endDrawing()

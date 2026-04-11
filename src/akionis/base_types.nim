@@ -8,7 +8,7 @@ type
   Game* = ref object of RootObj
     cameras: seq[Camera]
     lastCameraId: Option[CameraId]
-    states: seq[State]
+    state: State
     title: string
 
   CameraId* = enum 
@@ -27,7 +27,10 @@ type
     matrix: Matrix3
 
   State* = ref object of RootObj
-    nodes: seq[Node]
+    name: string
+    subState: State
+    persistentUpdate*: bool = false ## Should be updated when there is a subState
+    nodes: seq[Node] ## Nodes of this State
 
   Node* = ref object of RootObj
     state: State
@@ -53,9 +56,6 @@ proc initGame*(windowWidth, windowHeight: int32, title: string) =
   else:
     raise newException(ValueError, "Game already created")
 
-proc updateGame*(game:Game, deltaTime: float32) = 
-  echo ("update - start")
-
 proc initCamera*(x, y, scaleX, scaleY, rotation: float32): Camera =
   return Camera(x: x, y: y, scaleX: scaleY, rotation: rotation, dirty: true)
 
@@ -69,3 +69,46 @@ proc `title=`*(game: Game, newTitle: string) =
 proc addCamera*(game: Game, x, y, scaleX, scaleY, rotation: float32): Camera =
   game.cameras.add(initCamera(x, y, scaleX, scaleY, rotation))
   return game.cameras[-1]
+
+method close*(state:State) {.base.} = 
+  echo "Close state ", state.name
+
+method update*(state:State, deltaTime: float32) {.base.} =
+  echo "Update in state ", state.name
+
+method start*(state:State) {.base.} =
+  echo "Start state ", state.name
+
+method stop*(state:State) {.base.} =
+  echo "Stop state ", state.name
+
+proc doUpdate(state:State, deltaTime: float32) = 
+  echo ("update - starta")
+  if state.persistentUpdate or not state.subState.isNil:
+    state.update(deltaTime)
+  if not state.subState.isNil:
+    state.subState.update(deltaTime)
+
+proc closeSubState(parentState:State) =
+  if not parentState.subState.isNil:
+    parentState.subState.close
+
+proc openSubState(parentState, subState:State) =
+  if not parentState.subState.isNil:
+    parentState.subState.close
+  parentState.subState = subState
+  subState.start
+
+# ---------------   Game ----------------------
+
+proc openRootState(game: Game, state:State) =
+
+  if not game.state.isNil:
+    game.state.close
+  game.state = state
+  state.start
+
+proc updateGame*(game:Game, deltaTime: float32) = 
+  #echo ("update - start")
+  if not game.state.isNil:
+    game.state.doUpdate(deltaTime)
