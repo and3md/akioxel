@@ -32,9 +32,19 @@ type
     nodes: seq[Node] ## Nodes of this State
 
   Node* = ref object of RootObj
-    state: State
     children: seq[Node]
     components: seq[Component]
+    matrix: Matrix3
+    x: float32
+    y: float32
+    scaleX: float32
+    scaleY: float32
+    rotation: float32
+    dirty: bool ## Should we recalculate camera matrix
+
+
+  RootNode* = ref object of Node
+    parentState: State
 
   Component* = ref object of RootObj
     name: string
