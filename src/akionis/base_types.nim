@@ -83,8 +83,7 @@ method stop*(state:State) {.base.} =
   echo "Stop state ", state.name
 
 proc doUpdate(state:State, deltaTime: float32) = 
-  echo ("update - starta")
-  if state.persistentUpdate or not state.subState.isNil:
+  if state.persistentUpdate or state.subState.isNil:
     state.update(deltaTime)
   if not state.subState.isNil:
     state.subState.update(deltaTime)
@@ -101,7 +100,7 @@ proc openSubState(parentState, subState:State) =
 
 # ---------------   Game ----------------------
 
-proc openRootState(game: Game, state:State) =
+proc openRootState*(game: Game, state:State) =
 
   if not game.state.isNil:
     game.state.close
