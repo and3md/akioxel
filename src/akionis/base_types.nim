@@ -82,7 +82,15 @@ method start*(state:State) {.base.} =
 method stop*(state:State) {.base.} =
   echo "Stop state ", state.name
 
+proc doClose(state: State) = 
+  ## Takes care of recursive close of all states
+  # Close child state first
+  if not state.subState.isNil:
+    state.subState.doClose
+  state.close
+
 proc doUpdate(state:State, deltaTime: float32) = 
+  ## Takes care of correct updating everything
   if state.persistentUpdate or state.subState.isNil:
     state.update(deltaTime)
   if not state.subState.isNil:
@@ -90,11 +98,12 @@ proc doUpdate(state:State, deltaTime: float32) =
 
 proc closeSubState(parentState:State) =
   if not parentState.subState.isNil:
-    parentState.subState.close
+    parentState.subState.doClose
 
 proc openSubState(parentState, subState:State) =
+  ## Opens substate (with closing if other is open)
   if not parentState.subState.isNil:
-    parentState.subState.close
+    parentState.subState.doClose
   parentState.subState = subState
   subState.start
 
@@ -103,7 +112,7 @@ proc openSubState(parentState, subState:State) =
 proc openRootState*(game: Game, state:State) =
 
   if not game.state.isNil:
-    game.state.close
+    game.state.doClose
   game.state = state
   state.start
 
