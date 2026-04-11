@@ -9,6 +9,7 @@ import base_types
 proc run*(game: Game) =
   ## Runs the game loop 
   while not ray.windowShouldClose():
+    updateGame(game, ray.getFrameTime())
     ray.beginDrawing()
     ray.clearBackground(ray.DarkGray)
     ray.endDrawing()

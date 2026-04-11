@@ -53,6 +53,9 @@ proc initGame*(windowWidth, windowHeight: int32, title: string) =
   else:
     raise newException(ValueError, "Game already created")
 
+proc updateGame*(game:Game, deltaTime: float32) = 
+  echo ("update - start")
+
 proc initCamera*(x, y, scaleX, scaleY, rotation: float32): Camera =
   return Camera(x: x, y: y, scaleX: scaleY, rotation: rotation, dirty: true)
 
