@@ -27,7 +27,7 @@ type
     matrix: Matrix3
 
   State* = ref object of RootObj
-    name: string
+    name*: string
     subState: State
     persistentUpdate*: bool = false ## Should be updated when there is a subState
     nodes: seq[Node] ## Nodes of this State
