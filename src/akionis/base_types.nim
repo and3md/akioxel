@@ -1,10 +1,8 @@
 import std/options
-import vmath
+import matrices
 from raylib as ray import nil
 
 type
-  Matrix3* = GMat3[float32]
-
   Game* = ref object of RootObj
     cameras: seq[Camera]
     lastCameraId: Option[CameraId]
