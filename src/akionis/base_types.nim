@@ -96,7 +96,9 @@ proc newSquare*(size: float32, color: Color): Square =
   result.color = color
 
 method draw*(square: Square) =
-  let data = decomposeMatrix(square.parent.worldMatrix)
+  let data = decomposeMatrix(
+    square.parent.worldMatrix * translate(vec2(square.offsetX, square.offsetY))
+  )
   ray.drawRectangle(
     ray.Rectangle(x: data.x, y: data.y, width: square.size, height: square.size),
     square.color,
