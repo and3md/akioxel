@@ -4,11 +4,12 @@
 import akionis/base_types
 import akionis/game_loop
 import akionis/matrices
+import akionis/colors
 
 proc add*(x, y: int): int =
   ## Adds two numbers together.
   return x + y
 
 export 
-  matrices, base_types, game_loop
+  matrices, colors, base_types, game_loop
   

@@ -1,11 +1,10 @@
 import std/options
 import vmath
 import matrices
+import colors
 from raylib as ray import nil
 
 type
-  Color = ray.Color
-
   Game* = ref object of RootObj
     cameras: seq[Camera]
     lastCameraId: Option[CameraId]
@@ -77,7 +76,6 @@ type
     ## Trying to get a game instance but was not created
 
 var instance: Game
-const Red* = Color(r: 255, g: 0, b: 0, a: 255)
 
 proc getGame*(): Game =
   if instance.isNil:
