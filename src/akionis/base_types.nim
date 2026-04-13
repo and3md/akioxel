@@ -141,21 +141,21 @@ proc `y=`*(node: Node, newY: float32) =
 proc scaleX*(node: Node): float32 =
   return node.scaleX
 
-proc `scaleX`*(node: Node, newScaleX: float32) =
+proc `scaleX=`*(node: Node, newScaleX: float32) =
   node.scaleX = newScaleX
   node.dirty = true
 
 proc scaleY*(node: Node): float32 =
   return node.scaleY
 
-proc `scaleY`*(node: Node, newScaleY: float32) =
+proc `scaleY=`*(node: Node, newScaleY: float32) =
   node.scaleY = newScaleY
   node.dirty = true
 
 proc rotation*(node: Node): float32 =
   return node.rotation
 
-proc rotation*(node: Node, newRotation: float) =
+proc `rotation=`*(node: Node, newRotation: float) =
   node.rotation = newRotation
   node.dirty = true
 
