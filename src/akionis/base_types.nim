@@ -36,7 +36,7 @@ type
     name*: string
     subState: State
     persistentUpdate*: bool = false ## Should be updated when there is a subState
-    nodes: seq[Node] ## Nodes of this State
+    rootNode: RootNode ## The root node to which we add other nodes
 
   Node* = ref object of RootObj
     children: seq[Node]
