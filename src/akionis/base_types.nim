@@ -62,12 +62,12 @@ type
 
   RenderedComponent* = ref object of Component
     cameras: CameraMask
-    offsetX: float32
-    offsetY: float32
+    offsetX*: float32
+    offsetY*: float32
 
   Square* = ref object of RenderedComponent
-    color: Color
-    size: float32
+    color*: Color
+    size*: float32
 
   AkionisExcpetion* = object of CatchableError ## Base Akionis exception
   GameAlreadyCreated* = object of AkionisExcpetion
