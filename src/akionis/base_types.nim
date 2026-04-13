@@ -1,4 +1,5 @@
 import std/options
+import vmath
 import matrices
 from raylib as ray import nil
 
