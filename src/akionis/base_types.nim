@@ -238,6 +238,7 @@ proc updateCameraTransform(cam: Camera) =
   cam.isDirty = false
 
 proc resizeCameraTexture(cam: Camera, newSize: Size) =
+  echo "resize camera texture"
   if cam.texture.texture.width == newSize.width and
       cam.texture.texture.height == newSize.height:
     return
@@ -360,9 +361,13 @@ proc renderGame*(game: Game) =
   if not game.state.isNil:
     game.state.doRender
 
-proc doResize(game: Game) =
+proc wasResize*(game: Game): bool =
+  return ray.isWindowResized()
+
+proc doResize*(game: Game) =
   for cam in game.cameras:
     if cam.isFullScreen:
       cam.resizeCameraTexture(
         Size(width: ray.getRenderWidth(), height: ray.getRenderHeight())
       )
+

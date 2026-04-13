@@ -11,6 +11,8 @@ proc run*(game: Game, state: State) =
   
   game.openRootState(state)
   while not ray.windowShouldClose():
+    if game.wasResize():
+      game.doResize()
     game.updateGame(ray.getFrameTime())
     game.updateTransforms
     ray.beginDrawing()
