@@ -264,21 +264,36 @@ proc renderWithAllCameras(node: RootNode) =
 
 # ---------------   Camera   ----------------------
 
+proc worldX*(cam:Camera):float32 =
+  return cam.worldX
+
 proc `worldX=`*(cam: Camera, newWorldX: float32) =
   cam.worldX = newWorldX
   cam.isDirty = true
+
+proc worldY*(cam:Camera):float32 =
+  return cam.worldY
 
 proc `worldY=`*(cam: Camera, newWorldY: float32) =
   cam.worldY = newWorldY
   cam.isDirty = true
 
+proc rotation*(cam:Camera):float32 =
+  return cam.rotation
+
 proc `rotation=`*(cam: Camera, newRotation: float32) =
   cam.rotation = newRotation
   cam.isDirty = true
 
+proc scaleX*(cam:Camera):float32 =
+  return cam.scaleX
+
 proc `scaleX=`*(cam: Camera, newScale: float32) =
   cam.scaleX = newScale
   cam.isDirty = true
+
+proc scaleY*(cam:Camera):float32 =
+  return cam.scaleY
 
 proc `scaleY=`*(cam: Camera, newScale: float32) =
   cam.scaleY = newScale
