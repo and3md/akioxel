@@ -300,7 +300,7 @@ proc resetViewport*(cam: Camera) =
 
 proc updateCameraTransform(cam: Camera) =
   cam.matrix =
-    translate(vec2(cam.worldX, cam.worldY)) * rotate(-cam.rotation) *
+    translate(vec2(-cam.worldX, -cam.worldY)) * rotate(cam.rotation) *
     scale(vec2(cam.scaleX, cam.scaleY))
   cam.isDirty = false
 
