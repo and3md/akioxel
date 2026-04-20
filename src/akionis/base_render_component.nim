@@ -1,4 +1,4 @@
-
+# Render component related things
 
 method draw*(comp: RenderedComponent, camera: Camera) =
   ## Draw function to override

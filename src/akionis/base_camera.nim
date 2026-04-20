@@ -1,4 +1,4 @@
-# ---------------   Camera   ----------------------
+# Camera related things
 
 proc worldX*(cam:Camera):float32 =
   return cam.worldX
