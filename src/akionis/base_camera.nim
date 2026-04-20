@@ -53,7 +53,7 @@ proc newCamera*(worldX, worldY: float32): Camera =
   result.isFullScreen = true
   result.texture = ray.loadRenderTexture(ray.getRenderWidth(), ray.getRenderHeight())
 
-proc viewport*(cam: Camera): Rectangle =
+proc viewport*(cam: Camera): Rect =
   return cam.viewport
 
 proc resizeCameraTexture(cam: Camera, newSize: Size) =
@@ -63,7 +63,7 @@ proc resizeCameraTexture(cam: Camera, newSize: Size) =
     return
   cam.texture = ray.loadRenderTexture(newSize.width, newSize.height)
 
-proc `viewport=`*(cam: Camera, newViewport: Rectangle) =
+proc `viewport=`*(cam: Camera, newViewport: Rect) =
   echo "setting wievport"
   cam.viewport = newViewport
   cam.isFullScreen = false

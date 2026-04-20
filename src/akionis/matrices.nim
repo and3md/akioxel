@@ -1,8 +1,10 @@
 import math
 import vmath
+from raylib as ray import nil
 
 type
   Matrix3* = GMat3[float32]    
+  Rect* = ray.Rectangle
 
 proc decomposeMatrix*(
     matrix: Matrix3

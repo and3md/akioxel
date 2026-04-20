@@ -5,8 +5,6 @@ import colors
 from raylib as ray import nil
 
 type
-  Rectangle* = ray.Rectangle
-
   Size* = object
     width*: int32
     height*: int32
@@ -33,7 +31,7 @@ type
   Camera* = ref object of RootObj
     matrix: Matrix3
     id: CameraId
-    viewport: Rectangle
+    viewport: Rect
     texture: ray.RenderTexture2D ## Should have viewport size
     worldX: float32 ## World pos x 
     worldY: float32 ## World pos x

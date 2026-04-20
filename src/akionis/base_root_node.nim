@@ -23,14 +23,14 @@ proc renderWithAllCameras(node: RootNode) =
       #echo "rys"
       ray.drawTexture(
         cam.texture.texture,
-        Rectangle(
+        Rect(
           x: 0'f32,
           y: 0'f32,
           width: cam.texture.texture.width.float32,
           height: cam.texture.texture.height.float32,
         ),
         if cam.isFullScreen:
-          Rectangle(
+          Rect(
             x: 0'f32,
             y: 0'f32,
             width: cam.texture.texture.width.float32,

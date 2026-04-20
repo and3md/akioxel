@@ -75,13 +75,13 @@ proc renderGame*(game: Game) =
   # TODO: ascpect ratio, screen effects, etc here
   ray.drawTexture(
     game.screenTexture.texture,
-    Rectangle(
+    Rect(
       x: 0'f32,
       y: 0'f32,
       width: game.screenTexture.texture.width.float32,
       height: game.screenTexture.texture.height.float32,
     ),
-    Rectangle(
+    Rect(
       x: 0'f32,
       y: 0'f32,
       width: ray.getRenderWidth().float32,
