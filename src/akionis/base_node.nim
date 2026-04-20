@@ -74,12 +74,24 @@ proc updateTransforms(node: Node, parentMatrix: Matrix3, isParentDirty: bool) =
       child.updateTransforms(node.worldMatrix, isParentDirty or node.dirty)
     node.dirty = false
 
+proc drawComponentsBoundingBoxes*(node:Node, camera: Camera) =
+  for comp in node.components:
+    if comp of RenderedComponent:
+      RenderedComponent(comp).drawBoundingBox(camera)
+
+proc drawComponentsAndChildrenBoundingBoxes*(node:Node, camera: Camera) =
+  drawComponentsBoundingBoxes(node, camera)
+  for child in node.children:
+    child.drawComponentsBoundingBoxes(camera)
+
 proc render(node: Node, camera: Camera) =
   for comp in node.components:
     if comp of RenderedComponent:
       let renderComp = RenderedComponent(comp)
       if camera.id in renderComp.cameras:
         renderComp.draw(camera)
+  when defined(drawBoundingBoxes):
+    node.drawComponentsAndChildrenBoundingBoxes(camera)
 
 proc doRender(node: Node, camera: Camera) =
   node.render(camera)

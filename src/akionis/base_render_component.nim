@@ -28,3 +28,10 @@ method worldBoundingBox*(comp: RenderedComponent): Rect =
   result.y = world_p1.y
   result.width = 0
   result.height = 0
+
+proc drawBoundingBox*(comp: RenderedComponent, camera: Camera) =
+  
+  var rect = worldBoundingBox(comp)
+  camera.rectInCamera(rect)
+ 
+  ray.drawRectangleLines(rect, 1'f32, Yellow)
