@@ -90,7 +90,7 @@ proc render(node: Node, camera: Camera) =
       let renderComp = RenderedComponent(comp)
       if camera.id in renderComp.cameras:
         renderComp.draw(camera)
-  when defined(drawBoundingBoxes):
+  when defined(drawComponentsBoundingBoxes):
     node.drawComponentsAndChildrenBoundingBoxes(camera)
 
 proc doRender(node: Node, camera: Camera) =
