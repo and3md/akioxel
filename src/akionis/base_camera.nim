@@ -80,3 +80,12 @@ proc updateCameraTransform(cam: Camera) =
      translate(vec2(-cam.worldX, -cam.worldY))
     
   cam.isDirty = false
+
+proc rectInCamera(cam: Camera, rect: var Rect) =
+  ## Transforms rect for camera view, used by drawing bounding boxes
+  let pos = cam.matrix * vec3(rect.x, rect.y, 1'f32)
+  let size = cam.matrix * vec3(rect.x + rect.width, rect.y + rect.height, 1'f32)
+  rect.x = pos.x
+  rect.y = pos.y
+  rect.width = size.x - rect.x
+  rect.height = size.y - rect.y
