@@ -5,11 +5,11 @@ import colors
 from raylib as ray import nil
 
 type
-  Rectangle = ray.Rectangle
+  Rectangle* = ray.Rectangle
 
   Size* = object
-    width: int32
-    height: int32
+    width*: int32
+    height*: int32
 
   Game* = ref object of RootObj
     cameras: seq[Camera]
@@ -76,10 +76,6 @@ type
     offsetX*: float32
     offsetY*: float32
 
-  Square* = ref object of RenderedComponent
-    color*: Color
-    size*: float32
-
   AkionisExcpetion* = object of CatchableError ## Base Akionis exception
   GameAlreadyCreated* = object of AkionisExcpetion
     ## Raised after second try game creation 
@@ -91,45 +87,8 @@ type
 
 var instance: Game
 
-proc getGame*(): Game =
-  if instance.isNil:
-    raise newException(NoGameInstance, "No game instance")
-  return instance
-
-# ---------------   RenderComponent   ----------------------
-method draw*(comp: RenderedComponent, camera: Camera) =
-  discard
-
-method addCamera*(comp: RenderedComponent, cam: Camera) =
-  comp.cameras.incl(cam.id)
-
-proc decomposedTransform*(comp: RenderedComponent, cam: Camera
-): tuple[x: float32, y: float32, angle: float32, scaleX: float32, scaleY: float32] =
-  ## Returns position, scale, and rotation taking into account camera, world matrix and component offset
-  return decomposeMatrix(
-    cam.matrix * comp.parent.worldMatrix * translate(vec2(comp.offsetX, comp.offsetY))
-  )
-
-# ---------------   Square   ----------------------
-
-proc newSquare*(size: float32, color: Color): Square =
-  result = new(Square)
-  result.size = size
-  result.color = color
-
-method draw*(square: Square, camera: Camera) =
-  let data = square.decomposedTransform(camera)
-  ray.drawRectangle(
-    ray.Rectangle(
-      x: data.x,
-      y: data.y,
-      width: square.size * data.scaleX,
-      height: square.size * data.scaleY,
-    ),
-    ray.Vector2(x: 0.0, y: 0.0),
-    radToDeg(data.angle),
-    square.color,
-  )
+include base_camera
+include base_render_component
 
 # ---------------   Node   ----------------------
 
@@ -262,88 +221,6 @@ proc renderWithAllCameras(node: RootNode) =
       )
   ray.endTextureMode()
 
-# ---------------   Camera   ----------------------
-
-proc worldX*(cam:Camera):float32 =
-  return cam.worldX
-
-proc `worldX=`*(cam: Camera, newWorldX: float32) =
-  cam.worldX = newWorldX
-  cam.isDirty = true
-
-proc worldY*(cam:Camera):float32 =
-  return cam.worldY
-
-proc `worldY=`*(cam: Camera, newWorldY: float32) =
-  cam.worldY = newWorldY
-  cam.isDirty = true
-
-proc rotation*(cam:Camera):float32 =
-  return cam.rotation
-
-proc `rotation=`*(cam: Camera, newRotation: float32) =
-  cam.rotation = newRotation
-  cam.isDirty = true
-
-proc scaleX*(cam:Camera):float32 =
-  return cam.scaleX
-
-proc `scaleX=`*(cam: Camera, newScale: float32) =
-  cam.scaleX = newScale
-  cam.isDirty = true
-
-proc scaleY*(cam:Camera):float32 =
-  return cam.scaleY
-
-proc `scaleY=`*(cam: Camera, newScale: float32) =
-  cam.scaleY = newScale
-  cam.isDirty = true
-
-proc `scale=`*(cam: Camera, newScale: float32) =
-  cam.scaleX = newScale
-  cam.scaleY = newScale
-  cam.isDirty = true
-
-proc newCamera*(worldX, worldY: float32): Camera =
-  result = Camera(
-    worldX: worldX,
-    worldY: worldY,
-    scaleX: 1.0,
-    scaleY: 1.0,
-    rotation: 0,
-    isDirty: true,
-    isActive: true,
-  )
-  result.isFullScreen = true
-  result.texture = ray.loadRenderTexture(ray.getRenderWidth(), ray.getRenderHeight())
-
-proc viewport*(cam: Camera): Rectangle =
-  return cam.viewport
-
-proc resizeCameraTexture(cam: Camera, newSize: Size) =
-  echo "resize camera texture"
-  if cam.texture.id != 0 and cam.texture.texture.width == newSize.width and
-      cam.texture.texture.height == newSize.height:
-    return
-  cam.texture = ray.loadRenderTexture(newSize.width, newSize.height)
-
-proc `viewport=`*(cam: Camera, newViewport: Rectangle) =
-  echo "setting wievport"
-  cam.viewport = newViewport
-  cam.isFullScreen = false
-  cam.resizeCameraTexture(
-    Size(width: newViewport.width.int32, height: newViewport.height.int32)
-  )
-
-proc resetViewport*(cam: Camera) =
-  cam.isFullScreen = true
-
-proc updateCameraTransform(cam: Camera) =
-  cam.matrix =
-    scale(vec2(cam.scaleX, cam.scaleY)) * rotate(cam.rotation) *
-     translate(vec2(-cam.worldX, -cam.worldY))
-    
-  cam.isDirty = false
 
 # ---------------   State   ----------------------
 
@@ -412,103 +289,4 @@ proc game*(state: State): Game =
 
 # ---------------   Game   ----------------------
 
-proc addFullScreenCamera*(game: Game, worldX, worldY: float32): Camera =
-  ## Adds full screen camera that points to worldX, worldY in left top corrner
-  var camera = newCamera(worldX, worldY)
-  if game.lastCameraId.isNone:
-    camera.id = Camera1
-    game.lastCameraId = option(Camera1)
-  else:
-    if game.lastCameraId.get == high(CameraId):
-      raise newException(ToManyCameras, "To many cameras")
-    camera.id = succ(game.lastCameraId.get())
-    game.lastCameraId = option(camera.id)
-  game.cameras.add(camera)
-  return camera
-
-proc initGame*(
-    windowWidth, windowHeight: int32, title: string, addDefaultCamera: bool = true
-) =
-  ## Initialises a new ``Game`` object.
-  if instance.isNil:
-    instance = Game(title: title)
-    ray.setConfigFlags(ray.Flags[ray.ConfigFlags](ray.WindowResizable))
-    ray.initWindow(windowWidth, windowHeight, title)
-    instance.screenTexture =
-      ray.loadRenderTexture(ray.getRenderWidth(), ray.getRenderHeight())
-    if addDefaultCamera:
-      discard instance.addFullScreenCamera(0.0, 0.0)
-  else:
-    raise newException(GameAlreadyCreated, "Game already created")
-
-proc title*(game: Game): string =
-  return game.title
-
-proc `title=`*(game: Game, newTitle: string) =
-  ray.setWindowTitle(newTitle)
-  game.title = newTitle
-
-proc getDefaultCamera*(game: Game): Camera =
-  if game.cameras.len == 0:
-    discard game.addFullScreenCamera(0.0, 0.0)
-
-  return game.cameras[0]
-
-proc openRootState*(game: Game, state: State) =
-  if not game.state.isNil:
-    game.state.doClose
-  game.state = state
-  state.start
-
-proc updateGame*(game: Game, deltaTime: float32) =
-  #echo ("update - start")
-  if not game.state.isNil:
-    game.state.doUpdate(deltaTime)
-
-proc updateTransforms*(game: Game) =
-  if not game.state.isNil:
-    game.state.doUpdateTransform
-  for cam in game.cameras:
-    if cam.isActive and cam.isDirty:
-      cam.updateCameraTransform
-
-proc renderGameToTexture*(game: Game) =
-  if not game.state.isNil:
-    game.state.doRender
-
-proc renderGame*(game: Game) =
-  ## Renders game screen texture to screen
-  # TODO: ascpect ratio, screen effects, etc here
-  ray.drawTexture(
-    game.screenTexture.texture,
-    Rectangle(
-      x: 0'f32,
-      y: 0'f32,
-      width: game.screenTexture.texture.width.float32,
-      height: game.screenTexture.texture.height.float32,
-    ),
-    Rectangle(
-      x: 0'f32,
-      y: 0'f32,
-      width: ray.getRenderWidth().float32,
-      height: ray.getRenderHeight().float32,
-    ),
-    ray.Vector2(x: 0'f32, y: 0'f32),
-    0'f32,
-    White,
-  )
-
-proc wasResize*(game: Game): bool =
-  return ray.isWindowResized()
-
-proc doResize*(game: Game) =
-  let w = ray.getRenderWidth()
-  let h = ray.getRenderHeight()
-  instance.screenTexture = ray.loadRenderTexture(w, h)
-  for cam in game.cameras:
-    if cam.isFullScreen:
-      cam.resizeCameraTexture(Size(width: w, height: h))
-
-iterator getCameras*(game: Game): Camera =
-  for cam in game.cameras:
-    yield cam
+include base_game
