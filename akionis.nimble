@@ -11,4 +11,4 @@ srcDir        = "src"
 
 requires "nim >= 2.2.8"
 requires "naylib"
-requires "vmath >= 2.0.0"
+requires "vmath >= 3.0.0"
