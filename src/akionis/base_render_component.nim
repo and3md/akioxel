@@ -5,7 +5,7 @@ method draw*(comp: RenderedComponent, camera: Camera) =
   discard
 
 method addCamera*(comp: RenderedComponent, cam: Camera) =
-  ## Add camera on 
+  ## Adds the id of a given camera to draw the component on it 
   comp.cameras.incl(cam.id)
 
 proc decomposedTransform*(comp: RenderedComponent, cam: Camera
