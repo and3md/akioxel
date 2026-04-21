@@ -273,9 +273,12 @@ method worldBoundingBox*(comp: RenderedComponent): Rect =
 
 proc drawBoundingBox*(comp: RenderedComponent, camera: Camera) =
   var rect = worldBoundingBox(comp)
-  camera.rectInCamera(rect)
+  let orect = camera.rectInCamera(rect)
 
-  ray.drawRectangleLines(rect, 1'f32, Yellow)
+  ray.drawLine(orect.corners[0], orect.corners[1], Yellow)
+  ray.drawLine(orect.corners[1], orect.corners[2], Yellow)
+  ray.drawLine(orect.corners[2], orect.corners[3], Yellow)
+  ray.drawLine(orect.corners[3], orect.corners[0], Yellow)
 
 # ScriptComponent -----------------------------------------
 
@@ -395,8 +398,11 @@ proc drawComponentsAndChildrenBoundingBoxes*(node: Node, camera: Camera) =
 
 proc drawNodeBoundingBox*(node: Node, camera: Camera) =
   var nodeBoundingBox = node.worldBoundingBox
-  camera.rectInCamera(nodeBoundingBox)
-  ray.drawRectangleLines(nodeBoundingBox, 1'f32, Magenta)
+  let orientedBoundingBox = camera.rectInCamera(nodeBoundingBox)
+  ray.drawLine(orientedBoundingBox.corners[0], orientedBoundingBox.corners[1], Magenta)
+  ray.drawLine(orientedBoundingBox.corners[1], orientedBoundingBox.corners[2], Magenta)
+  ray.drawLine(orientedBoundingBox.corners[2], orientedBoundingBox.corners[3], Magenta)
+  ray.drawLine(orientedBoundingBox.corners[3], orientedBoundingBox.corners[0], Magenta)
 
 proc drawNodeAndChildrenBoundingBoxes*(node: Node, camera: Camera) =
   drawNodeBoundingBox(node, camera)
