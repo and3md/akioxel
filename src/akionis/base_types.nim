@@ -242,7 +242,7 @@ proc drawBoundingBox*(comp: RenderedComponent, camera: Camera) =
 # ScriptComponent -----------------------------------------
 
 method update*(self: ScriptComponent, deltaTime: float32) =
-  discard
+  echo "Empty script"
 
 # Node -----------------------------------------------------
 
