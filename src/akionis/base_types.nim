@@ -302,11 +302,20 @@ proc updateTransforms(node: Node, parentMatrix: Matrix3, isParentDirty: bool) =
     node.dirty = false
 
 method worldBoundingBox*(node: Node): Rect =
+  var wasFirst = false
   for comp in node.components:
     if comp of RenderedComponent:
-      result = rectMerge(result, RenderedComponent(comp).worldBoundingBox())
+      if wasFirst:
+        result = rectMerge(result, RenderedComponent(comp).worldBoundingBox())
+      else:
+        result = RenderedComponent(comp).worldBoundingBox()
+        wasFirst = true
   for child in node.children:
-    result = rectMerge(result, child.worldBoundingBox)
+    if wasFirst:
+      result = rectMerge(result, child.worldBoundingBox)
+    else:
+      result = child.worldBoundingBox
+      wasFirst = true
   echo "node worldBoundingBox ", result
 
 proc drawComponentsBoundingBoxes*(node: Node, camera: Camera) =
