@@ -368,10 +368,12 @@ proc renderWithAllCameras(node: RootNode) =
   for cam in node.parentState.game.cameras:
     if cam.isActive:
       ray.beginTextureMode(cam.texture)
+      ray.clearBackground(Color(r: 0, g: 0, b: 0, a: 0))
       node.doRender(cam)
       ray.endTextureMode()
 
   ray.beginTextureMode(node.parentState.game.screenTexture)
+  ray.clearBackground(Color(r: 0, g: 0, b: 0, a: 0))
   # TODO: camera effects here
   for cam in node.parentState.game.cameras:
     if cam.isActive:
