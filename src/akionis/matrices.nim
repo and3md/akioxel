@@ -32,4 +32,16 @@ proc globalRectFromVec3*(worldMatrix: Matrix3, p1, p2, p3, p4: Vector3): Rect =
   result.y = min_y
   result.width = max_x - min_x
   result.height = max_y - min_y
-  
+
+proc rectMerge*(rect1, rect2: Rect):Rect =
+  let r1x2 = rect1.x + rect1.width
+  let r1y2 = rect1.y + rect1.height
+  let r2x2 = rect2.x + rect2.width
+  let r2y2 = rect2.y + rect2.height
+  result.x = min(rect1.x, rect2.x)
+  result.y = min(rect1.y, rect2.y)
+  result.width = max(r1x2, r2x2) - result.x
+  result.height = max(r1y2, r2y2) - result.y
+
+
+
