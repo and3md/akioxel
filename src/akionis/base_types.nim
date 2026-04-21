@@ -316,9 +316,9 @@ proc updateTransforms(node: Node, parentMatrix: Matrix3, isParentDirty: bool) =
       parentMatrix * translate(vec2(node.x, node.y)) * rotate(-node.rotation) *
       scale(vec2(node.scaleX, node.scaleY))
 
-    for child in node.children:
-      child.updateTransforms(node.worldMatrix, isParentDirty or node.dirty)
-    node.dirty = false
+  for child in node.children:
+    child.updateTransforms(node.worldMatrix, isParentDirty or node.dirty)
+  node.dirty = false
 
 method worldBoundingBox*(node: Node): Rect =
   var wasFirst = false
