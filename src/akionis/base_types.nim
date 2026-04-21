@@ -76,12 +76,10 @@ type
     cameras: CameraMask = {Camera1}
     offsetX*: float32
     offsetY*: float32
-  
-  ScriptComponent* = ref object of Component
-    ## Component that runs update method
 
-  ClosureComponent* = ref object of Component
-    ## Component that runs onUpdate callback
+  ScriptComponent* = ref object of Component ## Component that runs update method
+
+  ClosureComponent* = ref object of Component ## Component that runs onUpdate callback
     onUpdate*: proc(self: ClosureComponent, deltaTime: float)
 
   AkionisExcpetion* = object of CatchableError ## Base Akionis exception
@@ -358,7 +356,7 @@ method calculateWorldBoundingBox(node: Node): Rect =
       result = child.calculateWorldBoundingBox
       wasFirst = true
 
-proc worldBoundingBox*(node:Node): Rect =
+proc worldBoundingBox*(node: Node): Rect =
   return node.cachedWorldBoundingBox
 
 proc updateTransforms(node: Node, parentMatrix: Matrix3, isParentDirty: bool): bool =
@@ -414,7 +412,7 @@ proc doRender(node: Node, camera: Camera) =
   for child in node.children:
     child.doRender(camera)
 
-proc doUpdate(node: Node, deltaTime: float) = 
+proc doUpdate(node: Node, deltaTime: float) =
   for comp in node.components:
     if not comp.enabled:
       continue
@@ -474,7 +472,7 @@ proc renderWithAllCameras(node: RootNode) =
         White,
       )
   ray.endTextureMode()
-  
+
 # State ----------------------------------------------------
 
 proc initState*(self: State, game: Game, name: string) =
