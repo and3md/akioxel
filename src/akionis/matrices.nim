@@ -5,8 +5,14 @@ from raylib as ray import nil
 type
   Matrix3* = GMat3[float32]
   Vector3* = GVec3[float32]
+  Vector2* = ray.Vector2
+    ## Maybe not the best idea to take Vector2 from Raylib but Vector3 and Matrix3 from vmath
 
   Rect* = ray.Rectangle
+
+  OrientedRect* = object
+    ## Oriented Bounding Box object, for rotated bunding box drawing
+    corners*: array[4, Vector2]
 
 proc decomposeMatrix*(
     matrix: Matrix3
