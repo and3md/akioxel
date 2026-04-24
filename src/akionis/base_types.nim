@@ -635,6 +635,7 @@ proc initGame*(
   ## Initialises a new ``Game`` object.
   if instance.isNil:
     instance = Game(title: title)
+    instance.lastCameraId = none(CameraId)
     ray.setConfigFlags(ray.Flags[ray.ConfigFlags](ray.WindowResizable))
     ray.initWindow(windowWidth, windowHeight, title)
     instance.screenTexture =
