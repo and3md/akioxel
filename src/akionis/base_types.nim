@@ -399,6 +399,8 @@ proc addComponent*(node: Node, comp: Component) =
 method calculateWorldBoundingBox(node: Node): Rect =
   var wasFirst = false
   for comp in node.components:
+    if not comp.isEnabled:
+      continue
     if comp of RenderedComponent:
       if wasFirst:
         result = rectMerge(result, RenderedComponent(comp).worldBoundingBox())
