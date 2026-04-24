@@ -69,7 +69,7 @@ type
 
   Component* = ref object of RootObj
     name*: string
-    enabled*: bool
+    isEnabled: bool
     parent: Node
 
   RenderedComponent* = ref object of Component
@@ -260,16 +260,29 @@ proc rectInCamera(cam: Camera, rect: var Rect): OrientedRect =
 # Component ------------------------------------------------
 
 proc initComponent*(comp: Component, name: string) =
-  comp.enabled = true
+  comp.isEnabled = true
   comp.name = name
 
 proc parent*(comp: Component): Node =
   return comp.parent
 
+proc isEnabled*(comp: Component): bool =
+  return comp.isEnabled
+
+method `isEnabled=`(comp: Component, newValue: bool) =
+  comp.isEnabled = newValue
+
 # RenderedComponent ----------------------------------------
 
 proc initRenderedComponent*(comp: RenderedComponent, name: string) =
   initComponent(comp, name)
+
+method `isEnabled=`(comp: RenderedComponent, newValue: bool) =
+  if comp.isEnabled == newValue:
+    return
+  comp.isEnabled = newValue
+  if not comp.parent.isNil:
+    comp.parent.dirty = true
 
 method draw*(comp: RenderedComponent, camera: Camera) =
   ## Draw function to override
@@ -462,7 +475,7 @@ proc doRender(node: Node, camera: Camera) =
 
 proc doUpdate(node: Node, deltaTime: float) =
   for comp in node.components:
-    if not comp.enabled:
+    if not comp.isEnabled:
       continue
     if comp of ScriptComponent:
       update(ScriptComponent(comp), deltaTime)
