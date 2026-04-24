@@ -76,8 +76,8 @@ type
 
   RenderedComponent* = ref object of Component
     cameras: CameraMask = {Camera1}
-    offsetX*: float32
-    offsetY*: float32
+    offsetX: float32
+    offsetY: float32
 
   ScriptComponent* = ref object of Component ## Component that runs update method
 
@@ -285,6 +285,24 @@ method `isExisting=`*(comp: RenderedComponent, newValue: bool) =
   comp.isExisting = newValue
   if not comp.parent.isNil:
     comp.parent.isDirty = true
+
+proc offsetX*(comp: RenderedComponent): float32 =
+  return comp.offsetX
+
+proc `offsetX=`*(comp: RenderedComponent, newValue: float32) =
+  if not almostEqual(comp.offsetX, newValue):
+    comp.offsetX = newValue
+    if not comp.parent.isNil:
+      comp.parent.isDirty = true
+
+proc offsetY*(comp: RenderedComponent): float32 =
+  return comp.offsetY
+
+proc `offsetY=`*(comp: RenderedComponent, newValue: float32) =
+  if not almostEqual(comp.offsetY, newValue):
+    comp.offsetY = newValue
+    if not comp.parent.isNil:
+      comp.parent.isDirty = true
 
 method draw*(comp: RenderedComponent, camera: Camera) =
   ## Draw function to override
