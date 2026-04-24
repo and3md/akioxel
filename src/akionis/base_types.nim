@@ -10,11 +10,12 @@ type
     height*: int32
 
   Game* = ref object of RootObj
-    cameras: seq[Camera]
-    lastCameraId: Option[CameraId]
-    state: State
-    title: string
-    screenTexture: ray.RenderTexture2D
+    ## Engine main object, holding the cameras and the current state
+    cameras: seq[Camera] ## Sequence of cameras
+    lastCameraId: Option[CameraId] ## Last used camera id in cameras
+    state: State ## State stack
+    title: string ## Title on window caption
+    screenTexture: ray.RenderTexture2D ## Texture used to draw anything
 
   CameraId* = enum
     Camera1
