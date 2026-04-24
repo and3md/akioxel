@@ -32,8 +32,9 @@ type
   Camera* = ref object of RootObj
     matrix: Matrix3 ## View matrix
     invMatrix: Matrix3 ## Needed to calculate world pos from screen pos
-    id: CameraId 
-    viewport: Rect ## The window space (rect) on which this camera draws (only when isFullScreen == false)
+    id: CameraId
+    viewport: Rect
+      ## The window space (rect) on which this camera draws (only when isFullScreen == false)
     visibleWorldRect: Rect ## World rect visible in the camera (used for culling)
     texture: ray.RenderTexture2D ## Texture on wich we reder, should have viewport size
     worldX: float32 ## World pos x 
