@@ -292,7 +292,7 @@ proc offsetX*(comp: RenderedComponent): float32 =
 proc `offsetX=`*(comp: RenderedComponent, newValue: float32) =
   if not almostEqual(comp.offsetX, newValue):
     comp.offsetX = newValue
-    if not comp.parent.isNil:
+    if comp.isExisting and (not comp.parent.isNil):
       comp.parent.isDirty = true
 
 proc offsetY*(comp: RenderedComponent): float32 =
@@ -301,7 +301,7 @@ proc offsetY*(comp: RenderedComponent): float32 =
 proc `offsetY=`*(comp: RenderedComponent, newValue: float32) =
   if not almostEqual(comp.offsetY, newValue):
     comp.offsetY = newValue
-    if not comp.parent.isNil:
+    if comp.isExisting and (not comp.parent.isNil):
       comp.parent.isDirty = true
 
 method draw*(comp: RenderedComponent, camera: Camera) =
