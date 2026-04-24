@@ -199,12 +199,38 @@ proc updateCameraTransform(cam: Camera) =
           1'f32,
         )
 
-  # TODO: camera rotation support ???
-  cam.visibleWorldRect.x = topLeftCorner.x
-  cam.visibleWorldRect.y = topLeftCorner.y
-  cam.visibleWorldRect.width = bottomRightCorner.x - topLeftCorner.x
-  cam.visibleWorldRect.height = bottomRightCorner.y - topLeftCorner.y
-  echo "visible world in camera", cam.visibleWorldRect
+  # simple code like that - does not work with camera rotation
+  # but is suitable for most cases so I add if here
+  if cam.rotation.isZero:
+    cam.visibleWorldRect.x = topLeftCorner.x
+    cam.visibleWorldRect.y = topLeftCorner.y
+    cam.visibleWorldRect.width = bottomRightCorner.x - topLeftCorner.x
+    cam.visibleWorldRect.height = bottomRightCorner.y - topLeftCorner.y
+  else:
+    # in this case we need get x1,x2, y1, y2 andf find min and max
+    # rect will be greater than screen/window but that the best case
+    # so we use AABB not OBB what is slower
+    let topRightCorner =
+      if cam.isFullScreen:
+        cam.invMatrix * vec3(cam.texture.texture.width.float32, 0'f32, 1'f32)
+      else:
+        cam.invMatrix * vec3(cam.viewport.x + cam.viewport.width, cam.viewport.y, 1'f32)
+    let bottomLeftCorner =
+      if cam.isFullScreen:
+        cam.invMatrix * vec3(0'f32, cam.texture.texture.height.float32, 1'f32)
+      else:
+        cam.invMatrix * vec3(
+          cam.viewport.x, cam.viewport.y + cam.viewport.height, 1'f32
+        )
+    cam.visibleWorldRect = boundingRectForPoints(
+      Vector2(x: topLeftCorner.x, y: topLeftCorner.y),
+      Vector2(x: topRightCorner.x, y: topRightCorner.y),
+      Vector2(x: bottomLeftCorner.x, y: bottomLeftCorner.y),
+      Vector2(x: bottomRightCorner.x, y: bottomRightCorner.y)
+    )
+
+  echo "screen size: ", ray.getRenderWidth(), ", ", ray.getRenderHeight()
+  echo "visible world in camera :", cam.visibleWorldRect
   echo "viewport 0, 0 ", cam.texture.texture.width, ", ", cam.texture.texture.height
 
   cam.isDirty = false
@@ -223,7 +249,6 @@ proc rectInCamera(cam: Camera, rect: var Rect): OrientedRect =
   result.corners[2].y = c3.y
   result.corners[3].x = c4.x
   result.corners[3].y = c4.y
-
 
 # Component ------------------------------------------------
 
