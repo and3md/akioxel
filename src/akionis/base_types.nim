@@ -63,7 +63,7 @@ type
     scaleX: float32 = 1.0
     scaleY: float32 = 1.0
     rotation: float32
-    dirty: bool = true ## Should we recalculate world matrix
+    isDirty: bool = true ## Should we recalculate world matrix
 
   RootNode* = ref object of Node
     parentState: State
@@ -283,7 +283,7 @@ method `isEnabled=`*(comp: RenderedComponent, newValue: bool) =
     return
   comp.isEnabled = newValue
   if not comp.parent.isNil:
-    comp.parent.dirty = true
+    comp.parent.isDirty = true
 
 method draw*(comp: RenderedComponent, camera: Camera) =
   ## Draw function to override
@@ -356,35 +356,35 @@ proc x*(node: Node): float32 =
 
 proc `x=`*(node: Node, newX: float32) =
   node.x = newX
-  node.dirty = true
+  node.isDirty = true
 
 proc y*(node: Node): float32 =
   return node.y
 
 proc `y=`*(node: Node, newY: float32) =
   node.y = newY
-  node.dirty = true
+  node.isDirty = true
 
 proc scaleX*(node: Node): float32 =
   return node.scaleX
 
 proc `scaleX=`*(node: Node, newScaleX: float32) =
   node.scaleX = newScaleX
-  node.dirty = true
+  node.isDirty = true
 
 proc scaleY*(node: Node): float32 =
   return node.scaleY
 
 proc `scaleY=`*(node: Node, newScaleY: float32) =
   node.scaleY = newScaleY
-  node.dirty = true
+  node.isDirty = true
 
 proc rotation*(node: Node): float32 =
   return node.rotation
 
 proc `rotation=`*(node: Node, newRotation: float) =
   node.rotation = newRotation
-  node.dirty = true
+  node.isDirty = true
 
 proc worldMatrix*(node: Node): Matrix3 =
   return node.worldMatrix
@@ -418,19 +418,19 @@ proc worldBoundingBox*(node: Node): Rect =
 proc updateTransforms(node: Node, parentMatrix: Matrix3, isParentDirty: bool): bool =
   ## Update this Node worldMatrix only when this node is dirty or parentDirty
   ## Returns true when something changes
-  if isParentDirty or node.dirty:
+  if isParentDirty or node.isDirty:
     node.worldMatrix =
       parentMatrix * translate(vec2(node.x, node.y)) * rotate(-node.rotation) *
       scale(vec2(node.scaleX, node.scaleY))
 
-  result = isParentDirty or node.dirty
+  result = isParentDirty or node.isDirty
   for child in node.children:
-    if child.updateTransforms(node.worldMatrix, isParentDirty or node.dirty):
+    if child.updateTransforms(node.worldMatrix, isParentDirty or node.isDirty):
       result = true
   # When result is true we need update cached WorldBoundingBox
   if result:
     node.cachedWorldBoundingBox = node.calculateWorldBoundingBox
-  node.dirty = false
+  node.isDirty = false
 
 proc drawComponentsBoundingBoxes*(node: Node, camera: Camera) =
   for comp in node.components:
