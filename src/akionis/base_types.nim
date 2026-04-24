@@ -457,6 +457,8 @@ proc drawNodeAndChildrenBoundingBoxes*(node: Node, camera: Camera) =
 
 proc render(node: Node, camera: Camera) =
   for comp in node.components:
+    if not comp.isEnabled:
+      continue
     if comp of RenderedComponent:
       let renderComp = RenderedComponent(comp)
       if camera.id in renderComp.cameras:
