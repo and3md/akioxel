@@ -1,5 +1,6 @@
 import ../../base_types
 import ../../colors
+import ../../matrices
 import math
 from raylib as ray import nil
 
@@ -35,3 +36,34 @@ method draw*(button: ButtonComponent, camera: Camera) =
     radToDeg(data.angle),
     button.color[button.state],
   )
+
+method calculateMinSize*(comp: ButtonComponent) =
+  let newMinSize = Size(width: 50, height: 30)
+  comp.calculatedMinSize = newMinSize
+
+method update*(comp: ButtonComponent, deltaTime: float32) =
+  # update buttno state
+  echo "update"
+  let parent = comp.parent
+  if parent.isNil:
+    return
+  let camera = getGame().getFirstCameraFromMask(comp.cameras)
+  if camera.isNil:
+    return
+
+  let mousePos = ray.getMousePosition()
+  echo "mouse point", mousePos
+
+  let worldMousePoint = screenPointToWorld(camera, mousePos)
+  echo "mouse world point", worldMousePoint
+
+  let boundingRect = worldBoundingBox(comp)
+  echo "comp rect", boundingRect
+
+  if pointInsideRect(boundingRect, worldMousePoint):
+    if ray.isMouseButtonDown(ray.MouseButton.Left):
+      comp.state = ButtonState.Down
+    else:
+      comp.state = ButtonState.Hover
+  else:
+    comp.state = ButtonState.Up
