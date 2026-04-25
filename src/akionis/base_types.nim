@@ -413,6 +413,8 @@ method update*(self: ScriptComponent, deltaTime: float32) =
 
 # UiComponent ----------------------------------------------
 
+proc initUiComponent*(comp: UiComponent, name: string) =
+  initRenderedComponent(comp, name)
 method draw*(comp: UiComponent, camera: Camera) =
   echo "draw ui component"
 
