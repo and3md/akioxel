@@ -305,6 +305,12 @@ proc updateCameraTransform(cam: Camera) =
   # After update camera is no longer dirty
   cam.isDirty = false
 
+proc screenPointToWorld*(cam: Camera, point: Vector2): Vector2 =
+  ## Returns point in world cooridnate system
+  let worldPoint = cam.invMatrix * vec3(point.x, point.y, 1'f32)
+  result.x = worldPoint.x
+  result.y = worldPoint.y
+
 proc rectInCamera(cam: Camera, rect: var Rect): OrientedRect =
   ## Transforms rect for camera view, used by drawing bounding boxes
   let c1 = cam.matrix * vec3(rect.x, rect.y, 1'f32)
