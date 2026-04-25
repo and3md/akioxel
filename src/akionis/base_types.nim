@@ -406,7 +406,7 @@ proc drawBoundingBox*(comp: RenderedComponent, camera: Camera) =
   ray.drawLine(orect.corners[2], orect.corners[3], Yellow)
   ray.drawLine(orect.corners[3], orect.corners[0], Yellow)
 
-# ScriptComponent -----------------------------------------
+# ScriptComponent ------------------------------------------
 
 method update*(self: ScriptComponent, deltaTime: float32) =
   echo "Empty script"
