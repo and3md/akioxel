@@ -88,7 +88,7 @@ type
     onUpdate*: proc(self: ClosureComponent, deltaTime: float)
 
   UiComponent* = ref object of RenderedComponent ## Base component for all UI components
-    calculatedMimSize: Size ## Minimum size with paddings calculated using content size
+    calculatedMinSize*: Size ## Minimum size with paddings calculated using content size
     minSize: Size
       ## Allows you to set the minimum size with paddings 0,0 means no constraints
     maxSize: Size
@@ -431,11 +431,11 @@ method draw*(comp: UiComponent, camera: Camera) =
 
 method calculateMinSize*(comp: UiComponent) =
   ## Method to calculate minimum size
-  comp.calculatedMimSize = Size(width: 0, height: 0)
+  comp.calculatedMinSize = Size(width: 0, height: 0)
 
 method updateSize*(comp: UiComponent, availableArea: Rect) =
   ## Method to update size with children
-  var newSize = comp.calculatedMimSize
+  var newSize = comp.calculatedMinSize
   applyMinMaxSize(newSize, comp.minSize, comp.maxSize) 
   if comp.size == newSize:
     return
