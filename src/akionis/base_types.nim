@@ -87,7 +87,7 @@ type
   ClosureComponent* = ref object of Component ## Component that runs onUpdate callback
     onUpdate*: proc(self: ClosureComponent, deltaTime: float)
 
-  UiComponent* = ref object of Component ## Base component for all UI components
+  UiComponent* = ref object of RenderedComponent ## Base component for all UI components
     calculatedMimSize: Size ## Minimum size with paddings calculated using content size
     minSize: Size
       ## Allows you to set the minimum size with paddings 0,0 means no constraints
