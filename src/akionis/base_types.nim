@@ -128,9 +128,9 @@ type
 
   NoParentNode* = object of AkionisExcpetion
     ## When you try use component function that need parent
-  
-  NoRootNode* = object of AkionisExcpetion
-    ## When searching/getting RootNode failed
+
+  NoRootNode* = object of AkionisExcpetion ## When searching/getting RootNode failed
+
 var instance: Game
 
 # Camera ---------------------------------------------------
