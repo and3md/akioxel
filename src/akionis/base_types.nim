@@ -353,6 +353,9 @@ method `isExisting=`*(comp: RenderedComponent, newValue: bool) =
   if not comp.parent.isNil:
     comp.parent.isDirty = true
 
+proc cameras*(comp: RenderedComponent): CameraMask =
+  return comp.cameras
+
 proc offsetX*(comp: RenderedComponent): float32 =
   return comp.offsetX
 
