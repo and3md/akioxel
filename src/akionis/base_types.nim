@@ -128,6 +128,8 @@ type
 
   NoParentNode* = object of AkionisExcpetion
     ## When you try use component function that need parent
+  
+  NoRootNode* = object of AkionisExcpetion
 
 var instance: Game
 
@@ -440,6 +442,19 @@ proc `rotation=`*(node: Node, newRotation: float) =
 
 proc makeDirty*(node: Node) =
   node.isDirty = true
+
+proc getRootNode*(node: Node): RootNode =
+  ## Gets RootNode from any other node in hierarchy
+  if node of RootNode:
+    return RootNode(node)
+  if node.parent.isNil:
+    raise newException(
+      NoRootNode, "No Root Node"
+    )
+  if node.parent of RootNode:
+    return RootNode(node.parent)
+  else:
+    return getRootNode(node.parent)
 
 proc worldMatrix*(node: Node): Matrix3 =
   return node.worldMatrix
