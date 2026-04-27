@@ -978,6 +978,7 @@ proc doResize*(game: Game) =
   instance.screenTexture = ray.loadRenderTexture(w, h)
   for cam in game.cameras:
     if cam.isFullScreen:
+      cam.isDirty = true
       cam.resizeCameraTexture(Size(width: w, height: h))
 
 iterator getCameras*(game: Game): Camera =
