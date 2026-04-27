@@ -5,13 +5,28 @@ import math
 import sequtils
 from raylib as ray import nil
 
-type VLayout = ref object of UiComponent
-  spacing: int32
+type
+  VAlignment {.pure.} = enum
+    Top
+    Center
+    Bottom
+
+  HAlignment {.pure.} = enum
+    Left
+    Center
+    Right
+
+  VLayout = ref object of UiComponent
+    spacing: int32
+    vAlignment: VAlignment
+    hAlignment: HAlignment
 
 proc newVLayout*(name: string): VLayout =
   result = new(VLayout)
   initUiComponent(result, name)
   result.spacing = 2
+  result.vAlignment = VAlignment.Center
+  result.hAlignment = HAlignment.Center
 
 proc spacing*(comp: VLayout): int32 =
   return comp.spacing
@@ -54,11 +69,25 @@ method updateSize*(comp: VLayout, availableSize: Size) =
     if wasFirstChild:
       usedSpace += comp.spacing
     else:
-      wasFirstChild = true  
-    r.node.x = 0'f32 # temporary simplification
+      wasFirstChild = true
+    # height:
     r.node.y = float32(y + usedSpace)
     usedSpace += r.comp.calculatedMinSize.height
     heightFactorSum += r.comp.heightFactor
+    # width:
+    # update width based on width factor
+    if r.comp.widthFactor > 0:
+      var size = r.comp.size
+      size.width = max(r.comp.calculatedMinSize.width, newSize.width)
+      size.width = max(size.width, r.comp.maxSize.width)
+      r.comp.size = size
+    case comp.hAlignment:
+      of HAlignment.Left:
+        r.node.x = 0'f32
+      of HAlignment.Right:
+        r.node.x = max(0, newSize.width - r.comp.size.width).float32
+      of HAlignment.Center:
+        r.node.x = max(0, ((newSize.width - r.comp.size.width) div 2).float32).float32
 
   # Phase 3: Expand children to use remaining space - TODO
 
