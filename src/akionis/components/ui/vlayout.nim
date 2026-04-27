@@ -6,11 +6,21 @@ import sequtils
 from raylib as ray import nil
 
 type VLayout = ref object of UiComponent
-  usedHeight: int32
+  spacing: int32
 
 proc newVLayout*(name: string): VLayout =
   result = new(VLayout)
   initUiComponent(result, name)
+  result.spacing = 2
+
+proc spacing*(comp: VLayout): int32 =
+  return comp.spacing
+
+proc `spacing=`*(comp: VLayout, newSpacingValue: int32) =
+  if comp.spacing == newSpacingValue:
+    return
+  comp.spacing = newSpacingValue
+  comp.uiNeedsSizeUpdate
 
 method draw*(comp: VLayout, camera: Camera) =
   discard
@@ -38,9 +48,13 @@ method updateSize*(comp: VLayout, availableSize: Size) =
   var usedSpace: int32 = 0
   var heightFactorSum: int32 = 0
   var y: int32 = 0
-  
+  var wasFirstChild = false
 
   for r in children:
+    if wasFirstChild:
+      usedSpace += comp.spacing
+    else:
+      wasFirstChild = true  
     r.node.x = 0'f32 # temporary simplification
     r.node.y = float32(y + usedSpace)
     usedSpace += r.comp.calculatedMinSize.height
