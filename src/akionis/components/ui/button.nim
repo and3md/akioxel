@@ -42,8 +42,7 @@ method calculateMinSize*(comp: ButtonComponent) =
   comp.calculatedMinSize = newMinSize
 
 method update*(comp: ButtonComponent, deltaTime: float32) =
-  # update buttno state
-  echo "update"
+  ## Updates button state
   let parent = comp.parent
   if parent.isNil:
     return
@@ -52,13 +51,8 @@ method update*(comp: ButtonComponent, deltaTime: float32) =
     return
 
   let mousePos = ray.getMousePosition()
-  echo "mouse point", mousePos
-
   let worldMousePoint = screenPointToWorld(camera, mousePos)
-  echo "mouse world point", worldMousePoint
-
   let boundingRect = worldBoundingBox(comp)
-  echo "comp rect", boundingRect
 
   if pointInsideRect(boundingRect, worldMousePoint):
     if ray.isMouseButtonDown(ray.MouseButton.Left):
