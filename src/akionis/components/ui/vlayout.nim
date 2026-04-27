@@ -89,7 +89,22 @@ method updateSize*(comp: VLayout, availableSize: Size) =
       of HAlignment.Center:
         r.node.x = max(0, ((newSize.width - r.comp.size.width) div 2).float32).float32
 
-  # Phase 3: Expand children to use remaining space - TODO
+  # Phase 3: Expand children to use remaining space
+  var remainingHeight = newSize.height - usedSpace
+  if remainingHeight > 0:
+    # calculate space per one height factor
+    let spacePerHeightFactor = int32(remainingHeight / heightFactorSum)
+    # iterate over children and add space
+    wasFirstChild = false
+    var deltaY:int32 = 0 
+    for r in children:
+      r.node.y = r.node.y + deltaY.float32
+      if r.comp.heightFactor > 0:
+        let extraHeight = spacePerHeightFactor * r.comp.heightFactor
+        var size = r.comp.size
+        size.height += extraHeight
+        r.comp.size = size
+        deltaY += spacePerHeightFactor * r.comp.heightFactor
 
   newSize.height = usedSpace
   echo "vlayout newSize ", newSize
