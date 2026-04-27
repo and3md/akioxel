@@ -433,7 +433,7 @@ proc initUiComponent*(comp: UiComponent, name: string) =
 
 proc getRootNode*(node: Node): RootNode
 
-proc uiNeedsSizeUpdate(comp: UiComponent) = 
+proc uiNeedsSizeUpdate*(comp: UiComponent) = 
   let parent = comp.parent
   if not parent.isNil:
     let rootNode = getRootNode(parent)
