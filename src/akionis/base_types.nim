@@ -546,17 +546,30 @@ proc worldMatrix*(node: Node): Matrix3 =
 proc addChild*(parentNode, newChild: Node) =
   parentNode.children.add(newChild)
 
-iterator getChildren*(node: Node): Node =
-  ## Node children iterator
-  for n in node.children:
-    yield n
-
 proc addComponent*(node: Node, comp: Component) =
   node.components.add(comp)
   comp.parent = node
   if comp.isExisting and comp of RenderedComponent:
     node.isDirty = true
 
+proc hasComponentOfType*[T](node: Node): bool =
+  ## Checks, does node have component of type T
+  for comp in node.components:
+    if comp of T:
+      return true
+  return false
+
+proc getFirstComponentOfType*[T](node: Node): T =
+  ## Returns first component of type T from node
+  for comp in node.components:
+    if comp of T:
+      return T(comp)
+  return nil
+
+iterator getChildren*(node: Node): Node =
+  ## Node children iterator
+  for n in node.children:
+    yield n
 method calculateWorldBoundingBox(node: Node): Rect =
   var wasFirst = false
   for comp in node.components:
