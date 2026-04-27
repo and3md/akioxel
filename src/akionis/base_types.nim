@@ -546,6 +546,11 @@ proc worldMatrix*(node: Node): Matrix3 =
 proc addChild*(parentNode, newChild: Node) =
   parentNode.children.add(newChild)
 
+iterator getChildren*(node: Node): Node =
+  ## Node children iterator
+  for n in node.children:
+    yield n
+
 proc addComponent*(node: Node, comp: Component) =
   node.components.add(comp)
   comp.parent = node
