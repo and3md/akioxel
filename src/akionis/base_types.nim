@@ -428,6 +428,15 @@ method update*(self: ScriptComponent, deltaTime: float32) =
 proc initUiComponent*(comp: UiComponent, name: string) =
   initRenderedComponent(comp, name)
 
+proc getRootNode*(node: Node): RootNode
+
+proc uiNeedsSizeUpdate(comp: UiComponent) = 
+  let parent = comp.parent
+  if not parent.isNil:
+    let rootNode = getRootNode(parent)
+    if not rootNode.isNil:
+      rootNode.needUiSizeUpdate = true
+
 proc size*(comp: UiComponent): Size =
   return comp.size
 
