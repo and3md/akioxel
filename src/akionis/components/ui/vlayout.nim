@@ -64,7 +64,18 @@ method updateSize*(comp: VLayout, availableSize: Size) =
   var heightFactorSum: int32 = 0
   var y: int32 = 0
   var wasFirstChild = false
+  var maxWidth: int32 = 0
 
+  # check max width, must be done before next loop
+  for r in children:
+    if r.comp.widthFactor > 0:
+      maxWidth = newSize.width
+      break
+    maxWidth = max(maxWidth, r.comp.size.width)
+    if maxWidth == newSize.width:
+      break
+
+  # width and horizontal alignment
   for r in children:
     if wasFirstChild:
       usedSpace += comp.spacing
@@ -85,9 +96,9 @@ method updateSize*(comp: VLayout, availableSize: Size) =
       of HAlignment.Left:
         r.node.x = 0'f32
       of HAlignment.Right:
-        r.node.x = max(0, newSize.width - r.comp.size.width).float32
+        r.node.x = max(0, maxWidth - r.comp.size.width).float32
       of HAlignment.Center:
-        r.node.x = max(0, ((newSize.width - r.comp.size.width) div 2).float32).float32
+        r.node.x = max(0, ((maxWidth - r.comp.size.width) div 2).float32).float32
 
   # Phase 3: Expand children to use remaining space
   var remainingHeight = newSize.height - usedSpace
@@ -107,6 +118,7 @@ method updateSize*(comp: VLayout, availableSize: Size) =
         deltaY += spacePerHeightFactor * r.comp.heightFactor
 
   newSize.height = usedSpace
+  newSize.width = maxWidth
   echo "vlayout newSize ", newSize
   if comp.size == newSize:
     return
