@@ -131,6 +131,9 @@ type
 
   NoRootNode* = object of AkionisExcpetion ## When searching/getting RootNode failed
 
+  NoSizeForUi* = object of AkionisExcpetion
+    ## The top-level Ui node must have a maxSize set to calculate the size of the entire Ui.
+
 var instance: Game
 
 # Size -----------------------------------------------------
