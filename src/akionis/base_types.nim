@@ -458,8 +458,20 @@ proc `maxSize=`*(comp: UiComponent, newMaxSize: Size) =
 proc heightFactor*(comp: UiComponent): int32 =
   return comp.heightFactor
 
+proc `heightFactor=`*(comp: UiComponent, newHeightFactor: int32) =
+  if comp.heightFactor == newHeightFactor:
+    return
+  comp.heightFactor = newHeightFactor
+  comp.uiNeedsSizeUpdate
+
 proc widthFactor*(comp: UiComponent): int32 =
   return comp.widthFactor
+
+proc `widthFactor=`*(comp: UiComponent, newWidthFactor: int32) =
+  if comp.widthFactor == newWidthFactor:
+    return
+  comp.widthFactor = newWidthFactor
+  comp.uiNeedsSizeUpdate
 
 proc `size=`*(comp: UiComponent, newSize: Size) =
   if comp.size == newSize:
