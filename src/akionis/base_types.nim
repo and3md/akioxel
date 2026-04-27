@@ -571,17 +571,19 @@ iterator getChildren*(node: Node): Node =
   for n in node.children:
     yield n
 
-iterator getChildrenWithFirstComponentOfType*[T](node: Node) : tuple[foundNode: Node, comp: T] =
+iterator getChildrenWithFirstComponentOfType*[T](
+    node: Node
+): tuple[node: Node, comp: T] =
   ## Iterator that returns tuple with Node and first component of type T
   var comp: T
   for n in node.children:
-    comp = n.getFirstComponentOfType[:T]
+    comp = getFirstComponentOfType[T](n)
     if not comp.isNil:
-      yield (foundNode: n, comp: comp)
+      yield (node: n, comp: comp)
 
-iterator getChildrenWithUi*(node: Node): tuple[foundNode: Node, comp: UiComponent] =
+iterator getChildrenWithUi*(node: Node): tuple[node: Node, comp: UiComponent] =
   ## Iterator that returns tuple with Node and first UiComponent from the Node
-  for n in node.getChildrenWithFirstComponentOfType[:UiComponent]:
+  for n in getChildrenWithFirstComponentOfType[UiComponent](node):
     yield n
 
 method calculateWorldBoundingBox(node: Node): Rect =
