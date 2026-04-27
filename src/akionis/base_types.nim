@@ -85,7 +85,7 @@ type
   ScriptComponent* = ref object of Component ## Component that runs update method
 
   ClosureComponent* = ref object of Component ## Component that runs onUpdate callback
-    onUpdate*: proc(self: ClosureComponent, deltaTime: float32)
+    onUpdate*: proc(self: ClosureComponent, deltaTime: float)
 
   UiComponent* = ref object of RenderedComponent ## Base component for all UI components
     calculatedMinSize*: Size ## Minimum size with paddings calculated using content size
@@ -143,7 +143,7 @@ proc sizeCompletelyEmpty*(size: Size): bool =
   ## Width and height is zero
   return size.width == 0 and size.height == 0
 
-proc applyMinMaxSize*(size: var Size, minSize, maxSize: Size) = 
+proc applyMinMaxSize*(size: var Size, minSize, maxSize: Size) =
   ## Applies constraints to size
   # min width
   if minSize.width != 0 and size.width < minSize.width:
@@ -157,7 +157,6 @@ proc applyMinMaxSize*(size: var Size, minSize, maxSize: Size) =
   #max height
   if maxSize.height != 0 and size.height > maxSize.height:
     size.height = maxSize.height
- 
 
 # Camera ---------------------------------------------------
 
@@ -428,7 +427,7 @@ proc initUiComponent*(comp: UiComponent, name: string) =
 proc size*(comp: UiComponent): Size =
   return comp.size
 
-proc `size=`*(comp: UiComponent, newSize: Size) = 
+proc `size=`*(comp: UiComponent, newSize: Size) =
   if comp.size == newSize:
     return
   comp.size = newSize
@@ -445,7 +444,7 @@ method calculateMinSize*(comp: UiComponent) =
 method updateSize*(comp: UiComponent, availableArea: Rect) =
   ## Method to update size with children
   var newSize = comp.calculatedMinSize
-  applyMinMaxSize(newSize, comp.minSize, comp.maxSize) 
+  applyMinMaxSize(newSize, comp.minSize, comp.maxSize)
   if comp.size == newSize:
     return
   comp.size = newSize
@@ -471,7 +470,6 @@ method worldBoundingBox*(comp: UiComponent): Rect =
     vec3(comp.size.width.float32, comp.size.height.float32, 1'f32),
     vec3(comp.size.width.float32, 0'f32, 1'f32),
   )
-
 
 # Node -----------------------------------------------------
 
@@ -876,7 +874,7 @@ iterator getCameras*(game: Game): Camera =
     yield cam
 
 proc getCameraWithId*(game: Game, camId: CameraId): Camera =
-  for cam in  game.cameras:
+  for cam in game.cameras:
     if cam.id == camId:
       return cam
   return nil
@@ -886,7 +884,7 @@ proc getFirstCameraFromMask*(game: Game, camId: CameraMask): Camera =
   for id in camId:
     firstId = id
     break
-  for cam in  game.cameras:
+  for cam in game.cameras:
     if cam.id == firstId:
       return cam
   return nil
