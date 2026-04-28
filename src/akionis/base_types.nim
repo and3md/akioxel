@@ -89,9 +89,9 @@ type
 
   UiComponent* = ref object of RenderedComponent ## Base component for all UI components
     calculatedMinSize*: Size ## Minimum size with paddings calculated using content size
-    minSize: Size
+    minConstraint: Size
       ## Allows you to set the minimum size with paddings 0,0 means no constraints
-    maxSize: Size
+    maxConstraint: Size
       ## Allows you to set the maximim size with paddings 0,0 means no constraints
     widthFactor: int32
       ## width factor flag:
@@ -145,20 +145,20 @@ proc sizeCompletelyEmpty*(size: Size): bool =
   ## Width and height is zero
   return size.width == 0 and size.height == 0
 
-proc applyMinMaxSize*(size: var Size, minSize, maxSize: Size) =
+proc applyMinMaxConstraint*(size: var Size, minConstraint, maxConstraint: Size) =
   ## Applies constraints to size
   # min width
-  if minSize.width != 0 and size.width < minSize.width:
-    size.width = minSize.width
+  if minConstraint.width != 0 and size.width < minConstraint.width:
+    size.width = minConstraint.width
   # min height
-  if minSize.height != 0 and size.height < minSize.height:
-    size.height = minSize.height
+  if minConstraint.height != 0 and size.height < minConstraint.height:
+    size.height = minConstraint.height
   #max width
-  if maxSize.width != 0 and size.width > maxSize.width:
-    size.width = maxSize.width
+  if maxConstraint.width != 0 and size.width > maxConstraint.width:
+    size.width = maxConstraint.width
   #max height
-  if maxSize.height != 0 and size.height > maxSize.height:
-    size.height = maxSize.height
+  if maxConstraint.height != 0 and size.height > maxConstraint.height:
+    size.height = maxConstraint.height
 
 # Camera ---------------------------------------------------
 
@@ -442,16 +442,16 @@ proc uiNeedsSizeUpdate*(comp: UiComponent) =
 proc size*(comp: UiComponent): Size =
   return comp.size
 
-proc minSize*(comp: UiComponent): Size =
-  return comp.minSize
+proc minConstraint*(comp: UiComponent): Size =
+  return comp.minConstraint
 
-proc maxSize*(comp: UiComponent): Size =
-  return comp.maxSize
+proc maxConstraint*(comp: UiComponent): Size =
+  return comp.maxConstraint
 
-proc `maxSize=`*(comp: UiComponent, newMaxSize: Size) =
-  if comp.maxSize == newMaxSize:
+proc `maxConstraint=`*(comp: UiComponent, newMaxSize: Size) =
+  if comp.maxConstraint == newMaxSize:
     return
-  comp.maxSize = newMaxSize
+  comp.maxConstraint = newMaxSize
   comp.uiNeedsSizeUpdate
 
 proc heightFactor*(comp: UiComponent): int32 =
@@ -496,7 +496,7 @@ method calculateMinSize*(comp: UiComponent) =
 method updateLayout*(comp: UiComponent, availableSize: Size) =
   ## Method to update layout, default implementation only set size to calculatedMinSize
   var newSize = comp.calculatedMinSize
-  applyMinMaxSize(newSize, comp.minSize, comp.maxSize)
+  applyMinMaxConstraint(newSize, comp.minConstraint, comp.maxConstraint)
   if comp.size == newSize:
     return
   comp.size = newSize
@@ -773,9 +773,9 @@ proc updateAllTransforms(node: RootNode) =
       
     # phase 2 - update layout
     for childWithUi in children:
-      if sizeEmpty(childWithUi.comp.maxSize):
-        raise newException(NoSizeForUi, "Top-level ui component must have max size")
-      childWithUi.comp.updateLayout(childWithUi.comp.maxSize)
+      if sizeEmpty(childWithUi.comp.maxConstraint):
+        raise newException(NoSizeForUi, "Top-level ui component must have max constraint")
+      childWithUi.comp.updateLayout(childWithUi.comp.maxConstraint)
     node.needUiSizeUpdate = false
     # TODO: is it necessary? Maybe do not update transform second time 
     # Currently only after needUiSizeUpdate 
