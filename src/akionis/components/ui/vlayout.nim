@@ -36,7 +36,7 @@ proc `vAlignment=`*(comp: VLayout, newValue: VAlignment) =
   if comp.vAlignment == newValue:
     return
   comp.vAlignment = newValue
-  comp.uiNeedsSizeUpdate
+  comp.uiNeedsLayoutUpdate
 
 proc hAlignment*(comp: VLayout): HAlignment =
   return comp.hAlignment
@@ -45,7 +45,7 @@ proc `hAlignment=`*(comp: VLayout, newValue: HAlignment) =
   if comp.hAlignment == newValue:
     return
   comp.hAlignment = newValue
-  comp.uiNeedsSizeUpdate
+  comp.uiNeedsLayoutUpdate
 
 proc spacing*(comp: VLayout): int32 =
   return comp.spacing
@@ -54,7 +54,7 @@ proc `spacing=`*(comp: VLayout, newSpacingValue: int32) =
   if comp.spacing == newSpacingValue:
     return
   comp.spacing = newSpacingValue
-  comp.uiNeedsSizeUpdate
+  comp.uiNeedsLayoutUpdate
 
 method draw*(comp: VLayout, camera: Camera) =
   discard

@@ -69,7 +69,7 @@ type
   RootNode* = ref object of Node
     parentState: State
     hasUi: bool ## Does this hierarchy have ui elements?
-    needUiSizeUpdate: bool ## Should Ui recalculate its size
+    needUiMinSizeUpdate: bool ## Should Ui recalculate its size
     needUiLayoutUpdate: bool ## Should Ui update its layout
 
   Component* = ref object of RootObj
@@ -432,12 +432,23 @@ proc initUiComponent*(comp: UiComponent, name: string) =
 
 proc getRootNode*(node: Node): RootNode
 
-proc uiNeedsSizeUpdate*(comp: UiComponent) = 
+proc uiNeedsMinSizeUpdate*(comp: UiComponent) =
+  ## Call when component min size should be recaluculated for e.g constraints chages, padding changes, min size changed, new child added
+  ## This run also uiNeedsLayoutUpdate
   let parent = comp.parent
   if not parent.isNil:
     let rootNode = getRootNode(parent)
     if not rootNode.isNil:
-      rootNode.needUiSizeUpdate = true
+      rootNode.needUiMinSizeUpdate = true
+      rootNode.needUiLayoutUpdate = true
+
+proc uiNeedsLayoutUpdate*(comp: UiComponent) =
+  ## Call when component min size not changes but window size changed, or something is hidden, width, height factor changes
+  let parent = comp.parent
+  if not parent.isNil:
+    let rootNode = getRootNode(parent)
+    if not rootNode.isNil:
+      rootNode.needUiLayoutUpdate = true
 
 proc size*(comp: UiComponent): Size =
   return comp.size
@@ -452,7 +463,7 @@ proc `maxConstraint=`*(comp: UiComponent, newMaxSize: Size) =
   if comp.maxConstraint == newMaxSize:
     return
   comp.maxConstraint = newMaxSize
-  comp.uiNeedsSizeUpdate
+  comp.uiNeedsMinSizeUpdate
 
 proc heightFactor*(comp: UiComponent): int32 =
   return comp.heightFactor
@@ -461,7 +472,7 @@ proc `heightFactor=`*(comp: UiComponent, newHeightFactor: int32) =
   if comp.heightFactor == newHeightFactor:
     return
   comp.heightFactor = newHeightFactor
-  comp.uiNeedsSizeUpdate
+  comp.uiNeedsLayoutUpdate
 
 proc widthFactor*(comp: UiComponent): int32 =
   return comp.widthFactor
@@ -470,7 +481,7 @@ proc `widthFactor=`*(comp: UiComponent, newWidthFactor: int32) =
   if comp.widthFactor == newWidthFactor:
     return
   comp.widthFactor = newWidthFactor
-  comp.uiNeedsSizeUpdate
+  comp.uiNeedsLayoutUpdate
 
 proc padding*(comp: UIComponent): UiPadding =
   return comp.padding
@@ -483,7 +494,8 @@ proc `size=`*(comp: UiComponent, newSize: Size) =
     comp.parent.isDirty = true
 
 method componentAddedToRoot(comp: UiComponent, root: RootNode) =
-  root.needUiSizeUpdate = true
+  root.needUiMinSizeUpdate = true
+  root.needUiLayoutUpdate = true
   root.hasUi = true
 
 method draw*(comp: UiComponent, camera: Camera) =
@@ -493,7 +505,7 @@ method calculateMinSize*(comp: UiComponent) =
   ## Method to calculate minimum size
   comp.minSize = Size(width: 0, height: 0)
 
-method updateLayout*(comp: UiComponent, availableSize: Size) =
+method updateLayout*(comp: UiComponent, availableSize: Size) {.base.} =
   ## Method to update layout, only used by layout components
   discard
 
@@ -754,25 +766,32 @@ proc updateAllTransforms(node: RootNode) =
   # because this is checked in updateTransforms() proc
   discard node.updateTransforms(mat3(), false)
 
-  if node.needUiSizeUpdate:
-    # currently ui nodes must start in child of root node
-    # this is a design assumption
-    var children: seq[tuple[node: Node, comp: UiComponent]]
+  # currently ui nodes must start in child of root node
+  # this is a design assumption
+
+  if node.needUiMinSizeUpdate:
     # phase 1 - calculate min size
     for childWithUi in node.getChildrenWithUi:
       if not childWithUi.comp.isExisting:
         continue
-      children.add(childWithUi)
       childWithUi.comp.calculateMinSize
-      
+
+    node.needUiMinSizeUpdate = false
+
+  if node.needUiLayoutUpdate:
     # phase 2 - update layout
-    for childWithUi in children:
+    for childWithUi in node.getChildrenWithUi:
+      if not childWithUi.comp.isExisting:
+        continue
+
       if sizeEmpty(childWithUi.comp.maxConstraint):
-        raise newException(NoSizeForUi, "Top-level ui component must have max constraint")
+        raise
+          newException(NoSizeForUi, "Top-level ui component must have max constraint")
       childWithUi.comp.updateLayout(childWithUi.comp.maxConstraint)
-    node.needUiSizeUpdate = false
+    node.needUiLayoutUpdate = false
+    
     # TODO: is it necessary? Maybe do not update transform second time 
-    # Currently only after needUiSizeUpdate 
+    # Currently only after needUiLayoutUpdate
     discard node.updateTransforms(mat3(), false)
 
 proc renderWithAllCameras(node: RootNode) =
