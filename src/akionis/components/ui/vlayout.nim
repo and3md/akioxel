@@ -127,7 +127,7 @@ method updateLayout*(comp: VLayout, availableSize: Size) =
 
   var y = comp.padding.top
   var haveExpanding = comp.heightFactorSum > 0
-  
+
   if not haveExpanding and remainingHeight > 0:
     # No expanding so set vertical alignment
     case comp.vAlignment
@@ -162,19 +162,22 @@ method updateLayout*(comp: VLayout, availableSize: Size) =
     # calcualte width
     var childWidth = r.comp.calculatedMinSize.width
     if r.comp.widthFactor > 0:
-      childWidth += spacePerHeightFactor * r.comp.widthFactor
-    # TODO add max width min width checking
+      if r.comp.maxSize.width != 0:
+        childWidth = min(newSize.width, r.comp.maxSize.width)
+      else:
+        childWidth = newSize.width - comp.padding.left - comp.padding.right
+      childWidth = max(childWidth, r.comp.minSize.width)
 
-    if r.comp.widthFactor == 0:
+    if r.comp.widthFactor == 0 or childWidth != newSize.width:
       case comp.hAlignment
       of HAlignment.Left:
-        r.node.x = 0'f32
+        r.node.x = comp.padding.right.float32
       of HAlignment.Center:
-        r.node.x = ((newSize.width - r.comp.calculatedMinSize.width) / 2).float32
+        r.node.x = ((newSize.width - comp.padding.left - comp.padding.right - r.comp.calculatedMinSize.width) / 2).float32
       of HAlignment.Right:
-        r.node.x = (newSize.width - r.comp.calculatedMinSize.width).float32
+        r.node.x = (newSize.width - comp.padding.left - comp.padding.right - r.comp.calculatedMinSize.width).float32
     else:
-      r.node.x = 0'f32
+      r.node.x = comp.padding.right.float32
 
     r.comp.size = Size(width: childWidth, height: childHeight)
 
