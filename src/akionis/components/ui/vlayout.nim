@@ -120,7 +120,7 @@ method updateSize*(comp: VLayout, availableSize: Size) =
 
   # Phase 3: Expand children to use remaining space
   var remainingHeight = newSize.height - usedSpace
-  if remainingHeight > 0:
+  if heightFactorSum > 0 and remainingHeight > 0:
     # calculate space per one height factor
     let spacePerHeightFactor = int32(remainingHeight / heightFactorSum)
     # iterate over children and add space
