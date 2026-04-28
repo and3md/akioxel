@@ -473,6 +473,9 @@ proc `widthFactor=`*(comp: UiComponent, newWidthFactor: int32) =
   comp.widthFactor = newWidthFactor
   comp.uiNeedsSizeUpdate
 
+proc padding*(comp: UIComponent): UiPadding =
+  return comp.padding
+
 proc `size=`*(comp: UiComponent, newSize: Size) =
   if comp.size == newSize:
     return
