@@ -176,9 +176,17 @@ method updateLayout*(comp: VLayout, availableSize: Size) =
       of HAlignment.Left:
         r.node.x = comp.padding.right.float32
       of HAlignment.Center:
-        r.node.x = ((newSize.width - comp.padding.left - comp.padding.right - r.comp.calculatedMinSize.width) / 2).float32
+        r.node.x = (
+          (
+            newSize.width - comp.padding.left - comp.padding.right -
+            r.comp.calculatedMinSize.width
+          ) / 2
+        ).float32
       of HAlignment.Right:
-        r.node.x = (newSize.width - comp.padding.left - comp.padding.right - r.comp.calculatedMinSize.width).float32
+        r.node.x = (
+          newSize.width - comp.padding.left - comp.padding.right -
+          r.comp.calculatedMinSize.width
+        ).float32
     else:
       r.node.x = comp.padding.right.float32
 
