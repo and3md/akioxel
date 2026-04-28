@@ -1,8 +1,5 @@
 import ../../base_types
-import ../../colors
-import ../../matrices
 import math
-import sequtils
 from raylib as ray import nil
 
 type
