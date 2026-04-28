@@ -339,10 +339,10 @@ proc parent*(comp: Component): Node =
 proc isExisting*(comp: Component): bool =
   return comp.isExisting
 
-method `isExisting=`*(comp: Component, newValue: bool) =
+method `isExisting=`*(comp: Component, newValue: bool) {.base.} =
   comp.isExisting = newValue
 
-method componentAddedToRoot(comp: Component, root: RootNode) =
+method componentAddedToRoot(comp: Component, root: RootNode) {.base.} =
   ## Method runs when component is added to rootNode
   discard
 
