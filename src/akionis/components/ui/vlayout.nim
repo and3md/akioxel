@@ -157,16 +157,19 @@ method updateLayout*(comp: VLayout, availableSize: Size) =
     var childHeight = r.comp.calculatedMinSize.height
     if r.comp.heightFactor > 0:
       childHeight += spacePerHeightFactor * r.comp.heightFactor
-    # TODO add max width min width checking
+    # height constraints
+    if r.comp.maxSize.height != 0:
+      childHeight = min(childHeight, r.comp.maxSize.height)
+    childHeight = max(childHeight, r.comp.minSize.height)
 
     # calcualte width
     var childWidth = r.comp.calculatedMinSize.width
     if r.comp.widthFactor > 0:
-      if r.comp.maxSize.width != 0:
-        childWidth = min(newSize.width, r.comp.maxSize.width)
-      else:
-        childWidth = newSize.width - comp.padding.left - comp.padding.right
-      childWidth = max(childWidth, r.comp.minSize.width)
+      childWidth = newSize.width - comp.padding.left - comp.padding.right
+    # width constraints
+    if r.comp.maxSize.width != 0:
+      childWidth = min(childWidth, r.comp.maxSize.width)
+    childWidth = max(childWidth, r.comp.minSize.width)
 
     if r.comp.widthFactor == 0 or childWidth != newSize.width:
       case comp.hAlignment
