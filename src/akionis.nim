@@ -9,7 +9,8 @@ import akionis/components/ui/alignment
 import akionis/components/ui/button
 import akionis/components/ui/vlayout
 import akionis/components/ui/hlayout
+import akionis/components/ui/rectangle_view
 
 export 
-  matrices, colors, base_types, game_loop, square, button, alignment, vlayout, hlayout
+  matrices, colors, base_types, game_loop, square, button, alignment, vlayout, hlayout, rectangle_view
   
