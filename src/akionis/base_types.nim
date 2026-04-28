@@ -105,7 +105,6 @@ type
       ## 2 - expands twice as strong as 1 etc.
     size: Size
       ## current used size with padding, can be set when UiComponent is not in layout
-    contentSize: Size ## size of content without paddings
     padding: UiPadding ## space between conntent and border
     isEnabled: bool ## is widget enabled
     wantTabFocus: bool ## do widget wants focus from tab key 
