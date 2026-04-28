@@ -191,6 +191,8 @@ method updateLayout*(comp: VLayout, availableSize: Size) =
       r.node.x = comp.padding.right.float32
 
     r.comp.size = Size(width: childWidth, height: childHeight)
+    # layout sub widget
+    r.comp.updateLayout(r.comp.size)
 
     y += childHeight
 
