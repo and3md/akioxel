@@ -35,6 +35,7 @@ method draw*(rectView: RectangleView, camera: Camera) =
   )
 
 method calculateMinSize*(comp: RectangleView) =
-  let newMinSize = Size(width: 100, height: 50)
+  var newMinSize = Size(width: 100, height: 50)
+  applyMinMaxConstraint(newMinSize, comp.minConstraint, comp.maxConstraint)
   comp.minSize = newMinSize
 
