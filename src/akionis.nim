@@ -11,7 +11,8 @@ import akionis/components/ui/vlayout
 import akionis/components/ui/hlayout
 import akionis/components/ui/rectangle_view
 import akionis/components/ui/border_layout
+import akionis/components/ui/scroll_bar
 
-export 
-  matrices, colors, base_types, game_loop, square, button, alignment, vlayout, hlayout, rectangle_view, border_layout
-  
+export
+  matrices, colors, base_types, game_loop, square, button, alignment, vlayout, hlayout,
+  rectangle_view, border_layout, scroll_bar
