@@ -60,3 +60,12 @@ proc `value=`*(comp: ScrollBar, newValue: int32) =
   if not comp.onValueChanged.isNil:
     comp.onValueChanged(newValue)
 
+method calculateMinSize*(comp: ScrollBar) =
+  var newMinSize =
+    if comp.orientation == Orientation.Horizontal:
+      Size(width: 30, height: scrollBarThicknes)
+    else:
+      Size(width: scrollBarThicknes, height: 30)
+  applyMinMaxConstraint(newMinSize, comp.minConstraint, comp.maxConstraint)
+  comp.minSize = newMinSize
+
