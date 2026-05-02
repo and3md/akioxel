@@ -2,6 +2,7 @@ import ../../base_types
 import ../../colors
 import ../../matrices
 import math
+import button_state
 from raylib as ray import nil
 
 type
@@ -15,6 +16,9 @@ type
     value: int32 = 0
     onValueChanged: proc(newValue: int32)
     minThumbSize: int32 = 10
+    backgroundColor: Color
+    thumbColor: array[ButtonState, Color]
+    thumbState: ButtonState
 
 const scrollBarThicknes = 10
 
@@ -24,6 +28,11 @@ proc newScrollBar*(orientation: Orientation, name: string): ScrollBar =
   result = new(ScrollBar)
   initUiComponent(result, name)
   `orientation=`(result, orientation)
+  result.backgroundColor = Black
+  result.thumbColor[ButtonState.Up] = Blue
+  result.thumbColor[ButtonState.Down] = Red
+  result.thumbColor[ButtonState.Hover] = Yellow
+  result.thumbState = ButtonState.Up
 
 proc orientation*(comp: ScrollBar): Orientation =
   return comp.orientation
