@@ -1,15 +1,11 @@
 import ../../base_types
 import ../../colors
 import ../../matrices
+import button_state
 import math
 from raylib as ray import nil
 
 type
-  ButtonState {.pure.} = enum
-    Up
-    Down
-    Hover
-
   ButtonComponent* = ref object of UiComponent
     state: ButtonState
     color*: array[ButtonState, Color]
