@@ -78,3 +78,16 @@ method calculateMinSize*(comp: ScrollBar) =
   applyMinMaxConstraint(newMinSize, comp.minConstraint, comp.maxConstraint)
   comp.minSize = newMinSize
 
+method draw*(comp: ScrollBar, camera: Camera) =
+  let data = comp.decomposedTransform(camera)
+  ray.drawRectangle(
+    ray.Rectangle(
+      x: data.x,
+      y: data.y,
+      width: comp.size.width.float32 * data.scaleX,
+      height: comp.size.height.float32 * data.scaleY,
+    ),
+    ray.Vector2(x: 0.0, y: 0.0),
+    radToDeg(data.angle),
+    comp.backgroundColor,
+  )
