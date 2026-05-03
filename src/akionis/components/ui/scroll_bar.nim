@@ -20,7 +20,7 @@ type
     thumbColor: array[ButtonState, Color]
     thumbState: ButtonState
 
-const scrollBarThicknes = 10
+const scrollBarThicknes = 15
 
 proc `orientation=`*(comp: ScrollBar, newOrientation: Orientation)
 
@@ -90,4 +90,53 @@ method draw*(comp: ScrollBar, camera: Camera) =
     ray.Vector2(x: 0.0, y: 0.0),
     radToDeg(data.angle),
     comp.backgroundColor,
+  )
+
+  var pixelWidth =
+    if comp.orientation == Orientation.Horizontal:
+      comp.size.width.float32 * data.scaleX
+    else:
+      comp.size.height.float32 * data.scaleY
+
+  echo "Pixel width: ", pixelWidth
+
+  var scaleForOrientation =
+    if comp.orientation == Orientation.Horizontal: data.scaleX else: data.scaleY
+
+  var pixelMaxValue = comp.maxValue.float32 * scaleForOrientation
+
+  var pixelThumbMinSize = comp.minThumbSize.float32 * scaleForOrientation
+
+  # pixelWidth < pixelMaxValue
+  if pixelWidth > pixelMaxValue:
+    # in this case we do not draw thumb
+    return
+
+  # how many pixelMaxValue fits the current size
+  var pixelThumbSize = (pixelWidth / pixelMaxValue) * pixelWidth
+
+  var pixelOffset =
+    if comp.orientation == Orientation.Horizontal:
+      data.x + (pixelWidth - pixelThumbSize) * (comp.value / comp.maxValue)
+    else:
+      data.y + (pixelWidth - pixelThumbSize) * (comp.value / comp.maxValue)
+
+  ray.drawRectangle(
+    ray.Rectangle(
+      x:
+        if comp.orientation == Orientation.Horizontal:
+          pixelOffset
+        else:
+          data.x,
+      y:
+        if comp.orientation == Orientation.Horizontal:
+          data.y
+        else:
+          pixelOffset,
+      width: comp.size.width.float32 * data.scaleX,
+      height: comp.size.height.float32 * data.scaleY,
+    ),
+    ray.Vector2(x: 0.0, y: 0.0),
+    radToDeg(data.angle),
+    comp.thumbColor[comp.thumbState],
   )
