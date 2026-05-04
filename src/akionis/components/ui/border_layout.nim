@@ -434,6 +434,10 @@ method updateLayout*(comp: BorderLayout, availableSize: Size) =
     bottomChild.node.y = yForBottom.float32
     bottomChild.comp.size = Size(width: calculatedWidth[BorderLayoutPosition.Bottom], height: calculatedHeight[BorderLayoutPosition.Bottom])
     bottomChild.comp.updateLayout(bottomChild.comp.size)
+    # update border right x when bottom width > center width
+    if BorderLayoutPosition.Right in availablePositions:
+      let rightChild = childrenArray[BorderLayoutPosition.Right]
+      rightChild.node.x = max(rightChild.node.x, bottomChild.node.x + float32(bottomChild.comp.size.width + comp.spacing))
 
   if comp.size == newSize:
     return
