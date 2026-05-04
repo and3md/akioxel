@@ -326,9 +326,9 @@ method updateLayout*(comp: BorderLayout, availableSize: Size) =
   if BorderLayoutPosition.Bottom in availablePositions:
     let bottomComp = childrenArray[BorderLayoutPosition.Right].comp
     if bottomComp.heightFactor == 0 or remainingHeightInHighestPlace == 0:
-      calculatedHeight[BorderLayoutPosition.Right] = bottomComp.minSize.height
+      calculatedHeight[BorderLayoutPosition.Bottom] = bottomComp.minSize.height
     else:
-      calculatedHeight[BorderLayoutPosition.Right] = bottomComp.minSize.height + spacePerHeightFactorHighestCol * bottomComp.heightFactor
+      calculatedHeight[BorderLayoutPosition.Bottom] = bottomComp.minSize.height + spacePerHeightFactorHighestCol * bottomComp.heightFactor
       # TODO constraints
 
   # left, center, right components height
