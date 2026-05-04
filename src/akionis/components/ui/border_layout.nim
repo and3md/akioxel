@@ -294,7 +294,7 @@ method updateLayout*(comp: BorderLayout, availableSize: Size) =
           calculatedWidth[pos] -= calculatedWidth[BorderLayoutPosition.Right]
           calculatedWidth[pos] -= comp.spacing
       # TODO constriants
-        
+
   # now we have all widths, it's time for height
   # in this case analogously we start by calcuclating top and bottom
   # height then all between
@@ -349,7 +349,6 @@ method updateLayout*(comp: BorderLayout, availableSize: Size) =
         # TODO constriants
 
   # now use calculated sizes and positioning
-
   var x = comp.padding.left
   var y = comp.padding.top
 
@@ -439,4 +438,5 @@ method updateLayout*(comp: BorderLayout, availableSize: Size) =
   if comp.size == newSize:
     return
   comp.size = newSize
+  echo "Border layout size ", comp.size
   parent.makeDirty
