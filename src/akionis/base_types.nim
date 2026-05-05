@@ -81,7 +81,8 @@ type
     cameras: CameraMask = {Camera1}
     offsetX: float32
     offsetY: float32
-
+    isClipChildren*: bool = false ## Clips children to his size
+  
   ScriptComponent* = ref object of Component ## Component that runs update method
 
   ClosureComponent* = ref object of Component ## Component that runs onUpdate callback
@@ -742,7 +743,9 @@ proc drawNodeAndChildrenBoundingBoxes*(node: Node, camera: Camera) =
   for child in node.children:
     drawNodeAndChildrenBoundingBoxes(child, camera)
 
-proc render(node: Node, camera: Camera) =
+proc render(node: Node, camera: Camera): Option[Rect] =
+  ## Render components on camera, returns option Rect to clip children components drawing
+  result = none(Rect)
   for comp in node.components:
     if not comp.isExisting:
       continue
@@ -750,6 +753,8 @@ proc render(node: Node, camera: Camera) =
       let renderComp = RenderedComponent(comp)
       if camera.id in renderComp.cameras:
         renderComp.draw(camera)
+      if renderComp.isClipChildren:
+        result = some(renderComp.worldBoundingBox)
   when defined(drawComponentsBoundingBoxes):
     node.drawComponentsAndChildrenBoundingBoxes(camera)
   when defined(drawNodesBoundingBoxes):
@@ -759,9 +764,14 @@ proc doRender(node: Node, camera: Camera) =
   # Simple brute force culling by checking bounding box and camera visibleWorldRect
   # Maybe it's worth add quadtree in the future
   if rectsOverlaps(camera.visibleWorldRect, node.worldBoundingBox):
-    node.render(camera)
+    let childrenClipRect = node.render(camera)
+    if childrenClipRect.isSome:
+      let clipRect = childrenClipRect.get()
+      ray.beginScissorMode(clipRect.x.int32, clipRect.y.int32, clipRect.width.int32, clipRect.height.int32)
     for child in node.children:
       child.doRender(camera)
+    if childrenClipRect.isSome:
+      ray.endScissorMode()
 
 proc doUpdate(node: Node, deltaTime: float) =
   for comp in node.components:
