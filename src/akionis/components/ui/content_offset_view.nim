@@ -15,6 +15,11 @@ type
   
 method calculateMinSize*(comp: ContentOffsetView) =  
   comp.minSize = Size(width: 50 + comp.padding.left + comp.padding.right, height: 50 + comp.padding.top + comp.padding.bottom)
+
+proc newContentOffsetView*(name: string): ContentOffsetView =
+  result = new(ContentOffsetView)
+  result.initUiComponent(name)
+
   applyMinMaxConstraint(comp.minSize, comp.minConstraint, comp.maxConstraint)
   
   # calculate minimum child minimum size
