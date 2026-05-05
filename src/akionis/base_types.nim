@@ -806,7 +806,7 @@ proc updateAllTransforms(node: RootNode) =
           newException(NoSizeForUi, "Top-level ui component must have max constraint")
       childWithUi.comp.updateLayout(childWithUi.comp.maxConstraint)
     node.needUiLayoutUpdate = false
-    
+
     # TODO: is it necessary? Maybe do not update transform second time 
     # Currently only after needUiLayoutUpdate
     discard node.updateTransforms(mat3(), false)
