@@ -98,12 +98,16 @@ method calculateMinSize*(comp: BorderLayout) =
   if BorderLayoutPosition.Top in availablePositions:
     comp.usedWidth[calcualtedRow] = comp.padding.left
     comp.usedWidth[calcualtedRow] += comp.padding.right
-    comp.usedWidth[calcualtedRow] += childrenArray[BorderLayoutPosition.Top].comp.minSize.width
-    comp.widthFactorSum[calcualtedRow] = childrenArray[BorderLayoutPosition.Top].comp.widthFactor
+    comp.usedWidth[calcualtedRow] +=
+      childrenArray[BorderLayoutPosition.Top].comp.minSize.width
+    comp.widthFactorSum[calcualtedRow] =
+      childrenArray[BorderLayoutPosition.Top].comp.widthFactor
     if BorderLayoutPosition.Left in availablePositions:
-      comp.usedWidth[calcualtedRow] += comp.spacing + childrenArray[BorderLayoutPosition.Left].comp.minSize.width
+      comp.usedWidth[calcualtedRow] +=
+        comp.spacing + childrenArray[BorderLayoutPosition.Left].comp.minSize.width
     if BorderLayoutPosition.Right in availablePositions:
-      comp.usedWidth[calcualtedRow] += comp.spacing + childrenArray[BorderLayoutPosition.Right].comp.minSize.width
+      comp.usedWidth[calcualtedRow] +=
+        comp.spacing + childrenArray[BorderLayoutPosition.Right].comp.minSize.width
 
   # for second row BorderLayoutPosition.Left, BorderLayoutPosition.Center, BorderLayoutPosition.Right
   calcualtedRow = BorderLayoutPosition.Center
@@ -128,12 +132,16 @@ method calculateMinSize*(comp: BorderLayout) =
   if BorderLayoutPosition.Bottom in availablePositions:
     comp.usedWidth[calcualtedRow] = comp.padding.left
     comp.usedWidth[calcualtedRow] += comp.padding.right
-    comp.usedWidth[calcualtedRow] += childrenArray[BorderLayoutPosition.Bottom].comp.minSize.width
-    comp.widthFactorSum[calcualtedRow] = childrenArray[BorderLayoutPosition.Bottom].comp.widthFactor
+    comp.usedWidth[calcualtedRow] +=
+      childrenArray[BorderLayoutPosition.Bottom].comp.minSize.width
+    comp.widthFactorSum[calcualtedRow] =
+      childrenArray[BorderLayoutPosition.Bottom].comp.widthFactor
     if BorderLayoutPosition.Left in availablePositions:
-      comp.usedWidth[calcualtedRow] += comp.spacing + childrenArray[BorderLayoutPosition.Left].comp.minSize.width
+      comp.usedWidth[calcualtedRow] +=
+        comp.spacing + childrenArray[BorderLayoutPosition.Left].comp.minSize.width
     if BorderLayoutPosition.Right in availablePositions:
-      comp.usedWidth[calcualtedRow] += comp.spacing + childrenArray[BorderLayoutPosition.Right].comp.minSize.width
+      comp.usedWidth[calcualtedRow] +=
+        comp.spacing + childrenArray[BorderLayoutPosition.Right].comp.minSize.width
 
   # calculate used height - for three columns
   # for first column only BorderLayoutPosition.Left
@@ -141,13 +149,16 @@ method calculateMinSize*(comp: BorderLayout) =
   if BorderLayoutPosition.Left in availablePositions:
     comp.usedHeight[calculatedColumn] = comp.padding.top
     comp.usedHeight[calculatedColumn] += comp.padding.bottom
-    comp.usedHeight[calculatedColumn] += childrenArray[BorderLayoutPosition.Left].comp.minSize.height
-    comp.heightFactorSum[calculatedColumn] = childrenArray[BorderLayoutPosition.Left].comp.heightFactor
+    comp.usedHeight[calculatedColumn] +=
+      childrenArray[BorderLayoutPosition.Left].comp.minSize.height
+    comp.heightFactorSum[calculatedColumn] =
+      childrenArray[BorderLayoutPosition.Left].comp.heightFactor
     if BorderLayoutPosition.Top in availablePositions:
-      comp.usedHeight[calcualtedRow] += comp.spacing + childrenArray[BorderLayoutPosition.Top].comp.minSize.height
+      comp.usedHeight[calcualtedRow] +=
+        comp.spacing + childrenArray[BorderLayoutPosition.Top].comp.minSize.height
     if BorderLayoutPosition.Bottom in availablePositions:
-      comp.usedHeight[calcualtedRow] += comp.spacing + childrenArray[BorderLayoutPosition.Bottom].comp.minSize.height
-
+      comp.usedHeight[calcualtedRow] +=
+        comp.spacing + childrenArray[BorderLayoutPosition.Bottom].comp.minSize.height
 
   # for second column BorderLayoutPosition.Top, BorderLayoutPosition.Center, BorderLayoutPosition.Bottom
   calculatedColumn = BorderLayoutPosition.Center
@@ -172,30 +183,42 @@ method calculateMinSize*(comp: BorderLayout) =
   if BorderLayoutPosition.Right in availablePositions:
     comp.usedHeight[calculatedColumn] = comp.padding.top
     comp.usedHeight[calculatedColumn] += comp.padding.bottom
-    comp.usedHeight[calculatedColumn] += childrenArray[BorderLayoutPosition.Right].comp.minSize.height
-    comp.heightFactorSum[calculatedColumn] = childrenArray[BorderLayoutPosition.Right].comp.heightFactor
+    comp.usedHeight[calculatedColumn] +=
+      childrenArray[BorderLayoutPosition.Right].comp.minSize.height
+    comp.heightFactorSum[calculatedColumn] =
+      childrenArray[BorderLayoutPosition.Right].comp.heightFactor
     if BorderLayoutPosition.Top in availablePositions:
-      comp.usedHeight[calcualtedRow] += comp.spacing + childrenArray[BorderLayoutPosition.Top].comp.minSize.height
+      comp.usedHeight[calcualtedRow] +=
+        comp.spacing + childrenArray[BorderLayoutPosition.Top].comp.minSize.height
     if BorderLayoutPosition.Bottom in availablePositions:
-      comp.usedHeight[calcualtedRow] += comp.spacing + childrenArray[BorderLayoutPosition.Bottom].comp.minSize.height
+      comp.usedHeight[calcualtedRow] +=
+        comp.spacing + childrenArray[BorderLayoutPosition.Bottom].comp.minSize.height
 
-  if comp.usedWidth[BorderLayoutPosition.Top] > comp.usedWidth[BorderLayoutPosition.Center] and
-    comp.usedWidth[BorderLayoutPosition.Top] > comp.usedWidth[BorderLayoutPosition.Bottom]:
-      comp.widestRow = BorderLayoutPosition.Top
+  if comp.usedWidth[BorderLayoutPosition.Top] >
+      comp.usedWidth[BorderLayoutPosition.Center] and
+      comp.usedWidth[BorderLayoutPosition.Top] >
+      comp.usedWidth[BorderLayoutPosition.Bottom]:
+    comp.widestRow = BorderLayoutPosition.Top
   else:
-    if comp.usedWidth[BorderLayoutPosition.Center] > comp.usedWidth[BorderLayoutPosition.Top] and
-      comp.usedWidth[BorderLayoutPosition.Center] > comp.usedWidth[BorderLayoutPosition.Bottom]:
+    if comp.usedWidth[BorderLayoutPosition.Center] >
+        comp.usedWidth[BorderLayoutPosition.Top] and
+        comp.usedWidth[BorderLayoutPosition.Center] >
+        comp.usedWidth[BorderLayoutPosition.Bottom]:
       comp.widestRow = BorderLayoutPosition.Center
     else:
       comp.widestRow = BorderLayoutPosition.Bottom
- 
-  if comp.usedHeight[BorderLayoutPosition.Left] > comp.usedHeight[BorderLayoutPosition.Center] and
-    comp.usedHeight[BorderLayoutPosition.Left] > comp.usedHeight[BorderLayoutPosition.Right]:
-      comp.highestColumn = BorderLayoutPosition.Left
+
+  if comp.usedHeight[BorderLayoutPosition.Left] >
+      comp.usedHeight[BorderLayoutPosition.Center] and
+      comp.usedHeight[BorderLayoutPosition.Left] >
+      comp.usedHeight[BorderLayoutPosition.Right]:
+    comp.highestColumn = BorderLayoutPosition.Left
   else:
-    if comp.usedHeight[BorderLayoutPosition.Center] > comp.usedHeight[BorderLayoutPosition.Left] and
-      comp.usedHeight[BorderLayoutPosition.Center] > comp.usedHeight[BorderLayoutPosition.Right]:
-        comp.highestColumn = BorderLayoutPosition.Center
+    if comp.usedHeight[BorderLayoutPosition.Center] >
+        comp.usedHeight[BorderLayoutPosition.Left] and
+        comp.usedHeight[BorderLayoutPosition.Center] >
+        comp.usedHeight[BorderLayoutPosition.Right]:
+      comp.highestColumn = BorderLayoutPosition.Center
     else:
       comp.highestColumn = BorderLayoutPosition.Right
 
@@ -233,8 +256,8 @@ method updateLayout*(comp: BorderLayout, availableSize: Size) =
   # calculate free space and 
   var remainingWidthInWidestPlace = newSize.width - biggestMinWidth
   var widestRowWidthFactorSum = comp.widthFactorSum[comp.widestRow]
-  
-  var spacePerWidthFactorWidestRow = 
+
+  var spacePerWidthFactorWidestRow =
     if widestRowWidthFactorSum > 0 and remainingWidthInWidestPlace > 0:
       int32(remainingWidthInWidestPlace / widestRowWidthFactorSum)
     else:
@@ -249,7 +272,8 @@ method updateLayout*(comp: BorderLayout, availableSize: Size) =
     if leftComp.widthFactor == 0 or remainingWidthInWidestPlace == 0:
       calculatedWidth[BorderLayoutPosition.Left] = leftComp.minSize.width
     else:
-      calculatedWidth[BorderLayoutPosition.Left] = leftComp.minSize.width + spacePerWidthFactorWidestRow * leftComp.widthFactor
+      calculatedWidth[BorderLayoutPosition.Left] =
+        leftComp.minSize.width + spacePerWidthFactorWidestRow * leftComp.widthFactor
       # TODO constraints
 
   if BorderLayoutPosition.Right in availablePositions:
@@ -257,11 +281,14 @@ method updateLayout*(comp: BorderLayout, availableSize: Size) =
     if rightComp.widthFactor == 0 or remainingWidthInWidestPlace == 0:
       calculatedWidth[BorderLayoutPosition.Right] = rightComp.minSize.width
     else:
-      calculatedWidth[BorderLayoutPosition.Right] = rightComp.minSize.width + spacePerWidthFactorWidestRow * rightComp.widthFactor
+      calculatedWidth[BorderLayoutPosition.Right] =
+        rightComp.minSize.width + spacePerWidthFactorWidestRow * rightComp.widthFactor
       # TODO constraints
 
   # top, center, bottom components  width
-  for pos in @[BorderLayoutPosition.Top, BorderLayoutPosition.Center, BorderLayoutPosition.Bottom]:
+  for pos in @[
+    BorderLayoutPosition.Top, BorderLayoutPosition.Center, BorderLayoutPosition.Bottom
+  ]:
     if pos in availablePositions:
       let calculatedComp = childrenArray[pos].comp
       # if no widthFactor set to minSize.width
@@ -286,15 +313,15 @@ method updateLayout*(comp: BorderLayout, availableSize: Size) =
   # calculate free space and 
   var remainingHeightInHighestPlace = newSize.height - biggestMinHeight
   var highestColWidthFactorSum = comp.heightFactorSum[comp.highestColumn]
-  
-  var spacePerHeightFactorHighestCol = 
+
+  var spacePerHeightFactorHighestCol =
     if highestColWidthFactorSum > 0 and remainingHeightInHighestPlace > 0:
       int32(remainingHeightInHighestPlace / highestColWidthFactorSum)
     else:
       0
 
   let maxHeight = newSize.height - comp.padding.top - comp.padding.bottom
-  
+
   var calculatedHeight: array[BorderLayoutPosition, int32]
 
   if BorderLayoutPosition.Top in availablePositions:
@@ -302,7 +329,8 @@ method updateLayout*(comp: BorderLayout, availableSize: Size) =
     if topComp.heightFactor == 0 or remainingHeightInHighestPlace == 0:
       calculatedHeight[BorderLayoutPosition.Top] = topComp.minSize.height
     else:
-      calculatedHeight[BorderLayoutPosition.Top] = topComp.minSize.height + spacePerHeightFactorHighestCol * topComp.heightFactor
+      calculatedHeight[BorderLayoutPosition.Top] =
+        topComp.minSize.height + spacePerHeightFactorHighestCol * topComp.heightFactor
       # TODO constraints
 
   if BorderLayoutPosition.Bottom in availablePositions:
@@ -310,11 +338,15 @@ method updateLayout*(comp: BorderLayout, availableSize: Size) =
     if bottomComp.heightFactor == 0 or remainingHeightInHighestPlace == 0:
       calculatedHeight[BorderLayoutPosition.Bottom] = bottomComp.minSize.height
     else:
-      calculatedHeight[BorderLayoutPosition.Bottom] = bottomComp.minSize.height + spacePerHeightFactorHighestCol * bottomComp.heightFactor
+      calculatedHeight[BorderLayoutPosition.Bottom] =
+        bottomComp.minSize.height +
+        spacePerHeightFactorHighestCol * bottomComp.heightFactor
       # TODO constraints
 
   # left, center, right components height
-  for pos in @[BorderLayoutPosition.Left, BorderLayoutPosition.Center, BorderLayoutPosition.Right]:
+  for pos in @[
+    BorderLayoutPosition.Left, BorderLayoutPosition.Center, BorderLayoutPosition.Right
+  ]:
     if pos in availablePositions:
       let calculatedComp = childrenArray[pos].comp
       # if no heiightFactor set to comp minSize.height
@@ -369,13 +401,16 @@ method updateLayout*(comp: BorderLayout, availableSize: Size) =
     let leftNode = childrenArray[BorderLayoutPosition.Left].node
     leftNode.x = x.float32
     x += calculatedWidth[BorderLayoutPosition.Left] + comp.spacing
-  
+
   if BorderLayoutPosition.Top in availablePositions:
     let topChild = childrenArray[BorderLayoutPosition.Top]
     topChild.node.x = x.float32
     topChild.node.y = y.float32
     y += calculatedHeight[BorderLayoutPosition.Top] + comp.spacing
-    topChild.comp.size = Size(width: calculatedWidth[BorderLayoutPosition.Top], height: calculatedHeight[BorderLayoutPosition.Top])
+    topChild.comp.size = Size(
+      width: calculatedWidth[BorderLayoutPosition.Top],
+      height: calculatedHeight[BorderLayoutPosition.Top],
+    )
     topChild.comp.updateLayout(topChild.comp.size)
 
   var yForBottom = y
@@ -383,29 +418,38 @@ method updateLayout*(comp: BorderLayout, availableSize: Size) =
   if BorderLayoutPosition.Left in availablePositions:
     let leftChild = childrenArray[BorderLayoutPosition.Left]
     leftChild.node.y = y.float32
-    leftChild.comp.size = Size(width: calculatedWidth[BorderLayoutPosition.Left], height: calculatedHeight[BorderLayoutPosition.Left])
+    leftChild.comp.size = Size(
+      width: calculatedWidth[BorderLayoutPosition.Left],
+      height: calculatedHeight[BorderLayoutPosition.Left],
+    )
     leftChild.comp.updateLayout(leftChild.comp.size)
     yForBottom = max(yForBottom, y + comp.spacing + leftChild.comp.size.height)
-  
+
   let xForBottom = x
   # center:
   if BorderLayoutPosition.Center in availablePositions:
     let centerChild = childrenArray[BorderLayoutPosition.Center]
     centerChild.node.x = x.float32
     centerChild.node.y = y.float32
-    centerChild.comp.size = Size(width: calculatedWidth[BorderLayoutPosition.Center], height: calculatedHeight[BorderLayoutPosition.Center])
+    centerChild.comp.size = Size(
+      width: calculatedWidth[BorderLayoutPosition.Center],
+      height: calculatedHeight[BorderLayoutPosition.Center],
+    )
     centerChild.comp.updateLayout(centerChild.comp.size)
     x += calculatedWidth[BorderLayoutPosition.Center] + comp.spacing
     yForBottom = max(yForBottom, y + comp.spacing + centerChild.comp.size.height)
   else:
     echo "Center UI Component of BorderLayout should be always available."
-  
+
   # right: 
   if BorderLayoutPosition.Right in availablePositions:
     let rightChild = childrenArray[BorderLayoutPosition.Right]
     rightChild.node.x = x.float32
     rightChild.node.y = y.float32
-    rightChild.comp.size = Size(width: calculatedWidth[BorderLayoutPosition.Right], height: calculatedHeight[BorderLayoutPosition.Right])
+    rightChild.comp.size = Size(
+      width: calculatedWidth[BorderLayoutPosition.Right],
+      height: calculatedHeight[BorderLayoutPosition.Right],
+    )
     rightChild.comp.updateLayout(rightChild.comp.size)
     yForBottom = max(yForBottom, y + comp.spacing + rightChild.comp.size.height)
 
@@ -414,12 +458,18 @@ method updateLayout*(comp: BorderLayout, availableSize: Size) =
     let bottomChild = childrenArray[BorderLayoutPosition.Bottom]
     bottomChild.node.x = xForBottom.float32
     bottomChild.node.y = yForBottom.float32
-    bottomChild.comp.size = Size(width: calculatedWidth[BorderLayoutPosition.Bottom], height: calculatedHeight[BorderLayoutPosition.Bottom])
+    bottomChild.comp.size = Size(
+      width: calculatedWidth[BorderLayoutPosition.Bottom],
+      height: calculatedHeight[BorderLayoutPosition.Bottom],
+    )
     bottomChild.comp.updateLayout(bottomChild.comp.size)
     # update border right x when bottom width > center width
     if BorderLayoutPosition.Right in availablePositions:
       let rightChild = childrenArray[BorderLayoutPosition.Right]
-      rightChild.node.x = max(rightChild.node.x, bottomChild.node.x + float32(bottomChild.comp.size.width + comp.spacing))
+      rightChild.node.x = max(
+        rightChild.node.x,
+        bottomChild.node.x + float32(bottomChild.comp.size.width + comp.spacing),
+      )
 
   if comp.size == newSize:
     return
