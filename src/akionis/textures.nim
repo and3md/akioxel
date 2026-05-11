@@ -9,13 +9,13 @@ type
   SharedTexture* = ref object of RootObj
     texture: Texture
 
-proc newSharedTexture(fileType: string; fileData: openArray[uint8]): SharedTexture = 
+proc newSharedTexture*(fileType: string; fileData: openArray[uint8]): SharedTexture = 
   result = new(SharedTexture)
   var image = ray.loadImageFromMemory(fileType,fileData)
   result.texture = ray.loadTextureFromImage(image)
 
 
-proc newSharedTexture(fileType: string; fileData: string): SharedTexture = 
+proc newSharedTexture*(fileType: string; fileData: string): SharedTexture = 
   return newSharedTexture(fileType, fileData.toByteSeq)
 
 
