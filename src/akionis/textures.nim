@@ -25,3 +25,22 @@ proc height*(tex: SharedTexture): int32 =
 
 proc drawSharedTexture*(tex: SharedTexture, x, y: float32, tint: Color = White) =
   ray.drawTexture(tex.texture, Vector2(x: x, y: y), tint)
+
+proc drawSharedTexture*(
+    tex: SharedTexture, x, y, rotation, scaleX, scaleY: float32, tint: Color = White
+) =
+  var srcRect = Rect(
+    x: 0'f32,
+    y: 0'f32,
+    width: tex.texture.width.float32,
+    height: tex.texture.height.float32,
+  )
+  var destRect = Rect(
+    x: x,
+    y: y,
+    width: tex.texture.width.float32 * scaleX,
+    height: tex.texture.width.float32 * scaleY,
+  )
+  ray.drawTexture(
+    tex.texture, srcRect, destRect, Vector2(x: 0'f32, y: 0'f32), rotation, tint
+  )
