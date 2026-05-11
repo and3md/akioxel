@@ -4,6 +4,7 @@ import akionis/base_types
 import akionis/game_loop
 import akionis/matrices
 import akionis/colors
+import akionis/textures
 import akionis/utils
 import akionis/components/square
 import akionis/components/ui/alignment
@@ -18,4 +19,4 @@ import akionis/components/ui/content_offset_view
 
 export
   matrices, colors, base_types, game_loop, square, button, alignment, vlayout, hlayout,
-  rectangle_view, border_layout, scroll_bar, button_state, content_offset_view, utils
+  rectangle_view, border_layout, scroll_bar, button_state, content_offset_view, utils, textures
