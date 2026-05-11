@@ -28,12 +28,15 @@ type
     widestRow: BorderLayoutPosition ## Top, Center or Bottom
     highestColumn: BorderLayoutPosition ## Left, Center or Right
 
+proc initBorderLayout*(comp: BorderLayout, name: string) =
+  initUiComponent(comp, name)
+  comp.spacing = 2
+  comp.vAlignment = VAlignment.Top
+  comp.hAlignment = HAlignment.Left
+
 proc newBorderLayout*(name: string): BorderLayout =
   result = new (BorderLayout)
-  initUiComponent(result, name)
-  result.spacing = 2
-  result.vAlignment = VAlignment.Top
-  result.hAlignment = HAlignment.Left
+  initBorderLayout(result, name)
 
 proc vAlignment*(comp: BorderLayout): VAlignment =
   return comp.vAlignment
