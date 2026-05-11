@@ -44,3 +44,17 @@ proc drawSharedTexture*(
   ray.drawTexture(
     tex.texture, srcRect, destRect, Vector2(x: 0'f32, y: 0'f32), rotation, tint
   )
+
+proc drawSharedTexture*(
+    tex: SharedTexture, destRect: Rect, rotation: float32, tint: Color = White
+) =
+  var srcRect = Rect(
+    x: 0'f32,
+    y: 0'f32,
+    width: tex.texture.width.float32,
+    height: tex.texture.height.float32,
+  )
+  ray.drawTexture(
+    tex.texture, srcRect, destRect, Vector2(x: 0'f32, y: 0'f32), rotation, tint
+  )
+
