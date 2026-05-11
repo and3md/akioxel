@@ -16,6 +16,7 @@ type
     state: State ## State stack
     title: string ## Title on window caption
     screenTexture: ray.RenderTexture2D ## Texture used to draw anything
+    afterGameRender*: proc()
 
   CameraId* = enum
     Camera1

@@ -19,4 +19,6 @@ proc run*(game: Game, state: State) =
     ray.beginDrawing()
     ray.clearBackground(ray.DarkGray)
     game.renderGame
+    if not game.afterGameRender.isNil:
+      game.afterGameRender()
     ray.endDrawing()
