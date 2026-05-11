@@ -11,6 +11,7 @@ type ContentOffsetView* = ref object of UiComponent
   contentOffsetY: int32
   contentMinSize: Size ## Content minimum size computed in calculateMinSize()
   contentSize: Size ## Content size computed in updateLayout
+  onContentSizeChanged*: proc(comp: ContentOffsetView)
 
 proc newContentOffsetView*(name: string): ContentOffsetView =
   result = new(ContentOffsetView)
@@ -48,6 +49,7 @@ method updateLayout*(comp: ContentOffsetView, availableSize: Size) =
     # no parent Node so just return
     return
 
+  var contentSizeChanged = false
   let child = comp.parent.getFirstChildWithUiComponent()
   if child.isSome:
     let (childNode, childComp) = child.get()
@@ -66,9 +68,13 @@ method updateLayout*(comp: ContentOffsetView, availableSize: Size) =
         comp.contentMinSize.height and childComp.heightFactor > 0:
       childSize.height = newSize.height - comp.padding.top - comp.padding.bottom
     childComp.size = childSize
-    comp.contentSize = childSize
+    if comp.contentSize != childSize:
+      comp.contentSize = childSize
+      contentSizeChanged = true
     childComp.updateLayout(childComp.size)
   comp.size = newSize
+  if contentSizeChanged and (not comp.onContentSizeChanged.isNil):
+    comp.onContentSizeChanged(comp)
   echo "ContentOffSetLayout size: ", comp.size
 
 method draw*(comp: ContentOffsetView, camera: Camera) =
