@@ -25,6 +25,6 @@ proc width*(tex: SharedTexture): int32 =
 proc height*(tex: SharedTexture): int32 =
   return tex.texture.height
 
-proc drawSharedTexture*(x, y: float32, tex: SharedTexture, tint: Color) =
+proc drawSharedTexture*(tex: SharedTexture, x, y: float32, tint: Color = White) =
   ray.drawTexture(tex.texture, Vector2(x: x, y:y), tint)
 
