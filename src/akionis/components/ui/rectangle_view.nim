@@ -4,21 +4,18 @@ import ../../matrices
 import math
 from raylib as ray import nil
 
+type RectangleView* = ref object of UiComponent
+  color*: Color = Green
 
-type
-  RectangleView* = ref object of UiComponent
-    color*: Color = Green
-
-proc newRectangleView*(name:string): RectangleView =
+proc newRectangleView*(name: string): RectangleView =
   result = new(RectangleView)
   initUiComponent(result, name)
 
-proc newRectangleView*(width: int32, height: int32, name:string): RectangleView =
+proc newRectangleView*(width: int32, height: int32, name: string): RectangleView =
   result = new(RectangleView)
   initUiComponent(result, name)
   result.minConstraint = Size(width: width, height: height)
   result.maxConstraint = Size(width: width, height: height)
-
 
 method draw*(rectView: RectangleView, camera: Camera) =
   let data = rectView.decomposedTransform(camera)
@@ -38,4 +35,3 @@ method calculateMinSize*(comp: RectangleView) =
   var newMinSize = Size(width: 100, height: 50)
   applyMinMaxConstraint(newMinSize, comp.minConstraint, comp.maxConstraint)
   comp.minSize = newMinSize
-
