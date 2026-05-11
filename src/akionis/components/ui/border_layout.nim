@@ -13,7 +13,7 @@ type
 
   BorderLayoutPositions = set[BorderLayoutPosition]
 
-  BorderLayout = ref object of UiComponent
+  BorderLayout* = ref object of UiComponent
     ## The layout that the first child takes as the center, the next as the right side,
     ## the next as the bottom side, the next as the left side, the next as the top side,
     ##
