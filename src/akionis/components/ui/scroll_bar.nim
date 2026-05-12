@@ -3,13 +3,10 @@ import ../../colors
 import ../../matrices
 import math
 import button_state
+import orientation
 from raylib as ray import nil
 
 type
-  Orientation* {.pure.} = enum
-    Horizontal
-    Vertical
-
   ScrollBar* = ref object of UiComponent
     orientation: Orientation
     maxValue: int32 = 100
@@ -98,7 +95,7 @@ method draw*(comp: ScrollBar, camera: Camera) =
     else:
       comp.size.height.float32 * data.scaleY
 
-  echo "Pixel width: ", pixelWidth
+  #echo "Pixel width: ", pixelWidth
 
   var scaleForOrientation =
     if comp.orientation == Orientation.Horizontal: data.scaleX else: data.scaleY
