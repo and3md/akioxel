@@ -61,9 +61,10 @@ method update*(comp: ButtonWidget, deltaTime: float32) =
 
   let mousePos = ray.getMousePosition()
   let worldMousePoint = screenPointToWorld(camera, mousePos)
-  let boundingRect = worldBoundingBox(comp)
+  let localMousePoint = parent.worldPointToLocal(worldMousePoint)
+  
 
-  if pointInsideRect(boundingRect, worldMousePoint):
+  if pointInsideRect(Rect(x: comp.offsetX.float32, y: comp.offsetY.float32, width: comp.size.width.float32, height: comp.size.height.float32), localMousePoint):
     if ray.isMouseButtonDown(ray.MouseButton.Left):
       comp.state = ButtonState.Down
     else:
