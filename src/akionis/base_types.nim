@@ -108,6 +108,7 @@ type
       ## 2 - expands twice as strong as 1 etc.
     size: Size
       ## current used size with padding, can be set when UiComponent is not in layout
+    onSizeChanged*: proc(comp: Widget)
     padding: UiPadding ## space between conntent and border
     isEnabled: bool ## is widget enabled
     wantTabFocus: bool ## do widget wants focus from tab key 
@@ -499,6 +500,8 @@ proc `size=`*(comp: Widget, newSize: Size) =
   if comp.size == newSize:
     return
   comp.size = newSize
+  if not comp.onSizeChanged.isNil:
+    comp.onSizeChanged(comp)
   if comp.isExisting and (not comp.parent.isNil):
     comp.parent.isDirty = true
 
