@@ -16,6 +16,7 @@ type
     value: int32 = 0
     onValueChanged: proc(newValue: int32)
     minThumbSize: int32 = 10
+    thumbSize: int32 = 10
     backgroundColor: Color
     thumbColor: array[ButtonState, Color]
     thumbState: ButtonState
@@ -92,61 +93,55 @@ method calculateMinSize*(comp: ScrollBarWidget) =
 
 method draw*(comp: ScrollBarWidget, camera: Camera) =
   let data = comp.decomposedTransform(camera)
+
+  let scaledWidth = comp.size.width.float32 * data.scaleX
+  let scaledHeight = comp.size.height.float32 * data.scaleY
+
+  # draw background
   ray.drawRectangle(
     ray.Rectangle(
       x: data.x,
       y: data.y,
-      width: comp.size.width.float32 * data.scaleX,
-      height: comp.size.height.float32 * data.scaleY,
+      width: scaledWidth,
+      height: scaledHeight,
     ),
     ray.Vector2(x: 0.0, y: 0.0),
     radToDeg(data.angle),
     comp.backgroundColor,
   )
 
-  var pixelWidth =
+  let pixelWidth =
     if comp.orientation == Orientation.Horizontal:
-      comp.size.width.float32 * data.scaleX
+      scaledWidth
     else:
-      comp.size.height.float32 * data.scaleY
+      scaledHeight
 
-  #echo "Pixel width: ", pixelWidth
-
-  var scaleForOrientation =
-    if comp.orientation == Orientation.Horizontal: data.scaleX else: data.scaleY
-
-  var pixelMaxValue = comp.maxValue.float32 * scaleForOrientation
-
-  var pixelThumbMinSize = comp.minThumbSize.float32 * scaleForOrientation
-
-  # pixelWidth < pixelMaxValue
-  if pixelWidth > pixelMaxValue:
-    # in this case we do not draw thumb
-    return
-
-  # how many pixelMaxValue fits the current size
-  var pixelThumbSize = (pixelWidth / pixelMaxValue) * pixelWidth
-
-  var pixelOffset =
-    if comp.orientation == Orientation.Horizontal:
-      data.x + (pixelWidth - pixelThumbSize) * (comp.value / comp.maxValue)
-    else:
-      data.y + (pixelWidth - pixelThumbSize) * (comp.value / comp.maxValue)
+  let pixelUnitValue =  pixelWidth / comp.maxValue.float32
+  let pixelValue = pixelUnitValue * comp.value.float32
+  let pixelThumbSize = pixelUnitValue * comp.thumbSize.float32
 
   ray.drawRectangle(
     ray.Rectangle(
       x:
         if comp.orientation == Orientation.Horizontal:
-          pixelOffset
+          data.x + pixelValue
         else:
           data.x,
       y:
         if comp.orientation == Orientation.Horizontal:
           data.y
         else:
-          pixelOffset,
-      width: comp.size.width.float32 * data.scaleX,
-      height: comp.size.height.float32 * data.scaleY,
+          data.y + pixelValue,
+      width: 
+        if comp.orientation == Orientation.Horizontal:
+          pixelThumbSize
+        else:
+          scaledWidth,
+      height:
+        if comp.orientation == Orientation.Horizontal:
+          scaledHeight
+        else:
+          pixelThumbSize
     ),
     ray.Vector2(x: 0.0, y: 0.0),
     radToDeg(data.angle),
