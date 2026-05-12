@@ -46,6 +46,7 @@ proc `contentOffsetX=`*(comp: ContentWidget, newContentOffset: int32) =
   comp.contentOffsetX = newContentOffset
   if not comp.onContentOffsetXChanged.isNil:
     comp.onContentOffsetXChanged(comp)
+  comp.uiNeedsLayoutUpdate
 
 proc contentOffsetY*(comp: ContentWidget): int32 =
   return comp.contentOffsetY
@@ -56,6 +57,7 @@ proc `contentOffsetY=`*(comp: ContentWidget, newContentOffset: int32) =
   comp.contentOffsetY = newContentOffset
   if not comp.onContentOffsetYChanged.isNil:
     comp.onContentOffsetYChanged(comp)
+  comp.uiNeedsLayoutUpdate
 
 method calculateMinSize*(comp: ContentWidget) =
   comp.minSize = Size(
