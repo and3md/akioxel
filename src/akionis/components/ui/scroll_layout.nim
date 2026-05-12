@@ -13,9 +13,10 @@ type ScrollLayout = ref object of BorderLayout
 proc updateScrollBars(comp: ContentWidget, vertScrollBar, horizScrollBar: ScrollBarWidget)
 
 
-proc newScrollNode(parentNode: Node): tuple[node: Node, contentWidget: ContentWidget] = 
+proc newNodeWithScrollArea*(parentNode: Node): tuple[node: Node, contentWidget: ContentWidget, borderLayout: BorderLayout] = 
   echo("create scroll area")
   let borderLayout = newNodeWithBorderLayout(parentNode)
+  result.borderLayout = borderLayout.widget
 
   let contentWidget = newNodeWithContentWidget(borderLayout.node)
   result.node = contentWidget.node
