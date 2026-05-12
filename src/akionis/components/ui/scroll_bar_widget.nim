@@ -14,7 +14,7 @@ type
     orientation: Orientation
     maxValue: int32 = 100
     value: int32 = 0
-    onValueChanged: proc(newValue: int32)
+    onValueChanged*: proc(newValue: int32)
     minThumbSize: int32 = 10
     thumbSize: int32 = 10
     backgroundColor: Color
