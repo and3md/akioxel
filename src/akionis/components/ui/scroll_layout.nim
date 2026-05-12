@@ -39,11 +39,10 @@ proc newNodeWithScrollArea*(parentNode: Node): tuple[node: Node, contentWidget: 
       updateScrollBars(ContentWidget(comp), vertScrollBar.widget, horizScrollBar.widget)
   
   vertScrollBar.widget.onValueChanged = proc(newValue: int32) =
-    contentWidget.widget.contentOffsetY = newValue
+    contentWidget.widget.contentOffsetY = -newValue
 
   horizScrollBar.widget.onValueChanged = proc(newValue: int32) =
-    contentWidget.widget.contentOffsetX = newValue
-
+    contentWidget.widget.contentOffsetX = -newValue
 
 proc updateScrollBars(comp: ContentWidget, vertScrollBar, horizScrollBar: ScrollBarWidget) =
   var widthFits = comp.contentSize.width <= comp.size.width
