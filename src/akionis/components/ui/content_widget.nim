@@ -15,6 +15,8 @@ type ContentWidget* = ref object of Widget
   contentMinSize: Size ## Content minimum size computed in calculateMinSize()
   contentSize: Size ## Content size computed in updateLayout
   onContentSizeChanged*: proc(comp: ContentWidget)
+  onContentOffsetXChanged*: proc(comp: ContentWidget)
+  onContentOffsetYChanged*: proc(comp: ContentWidget)
 
 proc newContentWidget*(parentNode: Node, name: string): ContentWidget =
   result = new(ContentWidget)
@@ -31,6 +33,29 @@ proc newNodeWithContentWidget*(parentNode: Node, widgetName: string = ""): tuple
   result.widget = newContentWidget(result.node, widgetName)
   if not parentNode.isNil:
     parentNode.addChild(result.node)
+
+proc contentSize*(comp: ContentWidget): Size =
+  return comp.contentSize
+
+proc contentOffsetX*(comp: ContentWidget): int32 =
+  return comp.contentOffsetX
+
+proc `contentOffsetX=`*(comp: ContentWidget, newContentOffset: int32) =
+  if comp.contentOffsetX == newContentOffset:
+    return
+  comp.contentOffsetX = newContentOffset
+  if not comp.onContentOffsetXChanged.isNil:
+    comp.onContentOffsetXChanged(comp)
+
+proc contentOffsetY*(comp: ContentWidget): int32 =
+  return comp.contentOffsetY
+
+proc `contentOffsetY=`*(comp: ContentWidget, newContentOffset: int32) =
+  if comp.contentOffsetY == newContentOffset:
+    return
+  comp.contentOffsetY = newContentOffset
+  if not comp.onContentOffsetYChanged.isNil:
+    comp.onContentOffsetYChanged(comp)
 
 method calculateMinSize*(comp: ContentWidget) =
   comp.minSize = Size(
