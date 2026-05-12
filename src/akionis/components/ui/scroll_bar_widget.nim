@@ -27,6 +27,9 @@ proc `orientation=`*(comp: ScrollBarWidget, newOrientation: Orientation)
 proc newScrollBarWidget*(parentNode: Node, orientation: Orientation, name: string = ""): ScrollBarWidget =
   result = new(ScrollBarWidget)
   initWidget(result, generateName(name, "ScrollBarWidget", lastGenNameNumber))
+  # by default orientation is Horizontal so we should also set widthFactor to this orientation
+  result.widthFactor = 1
+  result.heightFactor = 0
   `orientation=`(result, orientation)
   result.backgroundColor = Black
   result.thumbColor[ButtonState.Up] = Blue
