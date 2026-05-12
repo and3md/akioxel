@@ -82,6 +82,15 @@ proc `value=`*(comp: ScrollBarWidget, newValue: int32) =
   if not comp.onValueChanged.isNil:
     comp.onValueChanged(newValue)
 
+proc thumbSize*(comp: ScrollBarWidget): int32 =
+  return comp.thumbSize
+
+proc `thumbSize=`*(comp: ScrollBarWidget, newThumbSize: int32) =
+  if comp.thumbSize == newThumbSize:
+    return
+  comp.thumbSize = newThumbSize
+  # TODO: Maybe value correction
+
 method calculateMinSize*(comp: ScrollBarWidget) =
   var newMinSize =
     if comp.orientation == Orientation.Horizontal:
