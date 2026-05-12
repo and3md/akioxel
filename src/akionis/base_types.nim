@@ -230,7 +230,7 @@ proc resizeCameraTexture(cam: Camera, newSize: Size) =
   cam.texture = ray.loadRenderTexture(newSize.width, newSize.height)
 
 proc `viewport=`*(cam: Camera, newViewport: Rect) =
-  echo "setting wievport"
+  echo "setting viewport"
   cam.viewport = newViewport
   cam.isFullScreen = false
   cam.resizeCameraTexture(
