@@ -4,6 +4,8 @@ import ../../matrices
 import math
 from raylib as ray import nil
 
+var lastGenNameNumber: uint32 = 0 
+
 type RectangleView* = ref object of UiComponent
   color*: Color = Green
 
