@@ -14,6 +14,12 @@ proc updateScrollBars(comp: ContentWidget, vertScrollBar, horizScrollBar: Scroll
 
 
 proc newNodeWithScrollArea*(parentNode: Node): tuple[node: Node, contentWidget: ContentWidget, borderLayout: BorderLayout] = 
+  ## Combines some nodes and widgets to make scroll area
+  ## 
+  ## Result fields:
+  ## - node - content widget node
+  ## - contentWidget - inner ContentWidget component
+  ## - borderLayout - outer BorderLayout component
   echo("create scroll area")
   let borderLayout = newNodeWithBorderLayout(parentNode)
   result.borderLayout = borderLayout.widget
