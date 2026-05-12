@@ -1,24 +1,37 @@
 import ../../base_types
+import ../../utils
 import math
 from raylib as ray import nil
 import alignment
 
-type
-  VLayout = ref object of UiComponent
-    spacing: int32
-    vAlignment: VAlignment
-    hAlignment: HAlignment
-    usedSpace: int32 = 0 ## Used space for calculated min size
-    heightFactorSum: int32 = 0 ## Sum of height factors
-    maxWidth: int32 = 0 ## Max width for calculated min size
-    widthFactorSum: int32 = 0
+var lastGenNameNumber: uint32 = 0
 
-proc newVLayout*(name: string): VLayout =
+type VLayout = ref object of Widget
+  spacing: int32
+  vAlignment: VAlignment
+  hAlignment: HAlignment
+  usedSpace: int32 = 0 ## Used space for calculated min size
+  heightFactorSum: int32 = 0 ## Sum of height factors
+  maxWidth: int32 = 0 ## Max width for calculated min size
+  widthFactorSum: int32 = 0
+
+proc newVLayout*(parentNode: Node, name: string = ""): VLayout =
   result = new(VLayout)
-  initUiComponent(result, name)
+  initWidget(result, generateName(name, "VLayout", lastGenNameNumber))
   result.spacing = 2
   result.vAlignment = VAlignment.Center
   result.hAlignment = HAlignment.Center
+  if not parentNode.isNil:
+    parentNode.addComponent(result)
+
+proc newNodeWithVLayout*(
+    parentNode: Node, widgetName: string = ""
+): tuple[node: Node, widget: VLayout] =
+  ## Shortcut create widget with node and add it to parent node
+  result.node = newNode()
+  result.widget = newVLayout(result.node, widgetName)
+  if not parentNode.isNil:
+    parentNode.addChild(result.node)
 
 proc vAlignment*(comp: VLayout): VAlignment =
   return comp.vAlignment
@@ -81,8 +94,7 @@ method calculateMinSize*(comp: VLayout) =
     comp.usedSpace += r.comp.minSize.height
     comp.heightFactorSum += r.comp.heightFactor
     comp.maxWidth = max(
-      comp.maxWidth,
-      r.comp.minSize.width + r.comp.padding.left + r.comp.padding.right,
+      comp.maxWidth, r.comp.minSize.width + r.comp.padding.left + r.comp.padding.right
     )
     comp.widthFactorSum += r.comp.widthFactor
 
@@ -126,7 +138,7 @@ method updateLayout*(comp: VLayout, availableSize: Size) =
     of VAlignment.Bottom:
       y += remainingHeight
 
-  var children: seq[tuple[node: Node, comp: UiComponent]]
+  var children: seq[tuple[node: Node, comp: Widget]]
   for r in parent.getChildrenWithUi:
     if not r.comp.isExisting:
       continue
@@ -166,14 +178,12 @@ method updateLayout*(comp: VLayout, availableSize: Size) =
       of HAlignment.Center:
         r.node.x = (
           (
-            newSize.width - comp.padding.left - comp.padding.right -
-            r.comp.minSize.width
+            newSize.width - comp.padding.left - comp.padding.right - r.comp.minSize.width
           ) / 2
         ).float32
       of HAlignment.Right:
         r.node.x = (
-          newSize.width - comp.padding.left - comp.padding.right -
-          r.comp.minSize.width
+          newSize.width - comp.padding.left - comp.padding.right - r.comp.minSize.width
         ).float32
     else:
       r.node.x = comp.padding.right.float32

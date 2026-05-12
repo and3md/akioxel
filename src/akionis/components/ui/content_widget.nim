@@ -1,26 +1,38 @@
 import std/options
 import ../../base_types
+import ../../utils
 import ../../matrices
 import math
 from raylib as ray import nil
 
-type ContentOffsetView* = ref object of UiComponent
-  ## A component that clips the child's drawing to ContentOffsetView size with clipping
-  ## Only first child with UiComponent is taken into account
+var lastGenNameNumber: uint32 = 0 
+
+type ContentWidget* = ref object of Widget
+  ## A component that clips the child's drawing to ContentWidget's size with clipping
+  ## Only first child with Widget is taken into account
   contentOffsetX: int32
   contentOffsetY: int32
   contentMinSize: Size ## Content minimum size computed in calculateMinSize()
   contentSize: Size ## Content size computed in updateLayout
-  onContentSizeChanged*: proc(comp: ContentOffsetView)
+  onContentSizeChanged*: proc(comp: ContentWidget)
 
-proc newContentOffsetView*(name: string): ContentOffsetView =
-  result = new(ContentOffsetView)
-  result.initUiComponent(name)
+proc newContentWidget*(parentNode: Node, name: string): ContentWidget =
+  result = new(ContentWidget)
+  initWidget(result, generateName(name, "ContentWidget", lastGenNameNumber))
   result.isClipChildren = true
   result.widthFactor = 1
   result.heightFactor = 1
+  if not parentNode.isNil:
+    parentNode.addComponent(result)
 
-method calculateMinSize*(comp: ContentOffsetView) =
+proc newNodeWithContentWidget*(parentNode: Node, widgetName: string = ""): tuple[node: Node, widget: ContentWidget] =
+  ## Shortcut create widget with node and add it to parent node
+  result.node = newNode()
+  result.widget = newContentWidget(result.node, widgetName)
+  if not parentNode.isNil:
+    parentNode.addChild(result.node)
+
+method calculateMinSize*(comp: ContentWidget) =
   comp.minSize = Size(
     width: 50 + comp.padding.left + comp.padding.right,
     height: 50 + comp.padding.top + comp.padding.bottom,
@@ -31,7 +43,7 @@ method calculateMinSize*(comp: ContentOffsetView) =
   if comp.parent.isNil:
     return
 
-  let child = comp.parent.getFirstChildWithUiComponent()
+  let child = comp.parent.getFirstChildWithWidget()
   if child.isSome:
     let (childNode, childComp) = child.get()
     childComp.calculateMinSize
@@ -39,7 +51,7 @@ method calculateMinSize*(comp: ContentOffsetView) =
   else:
     comp.contentMinSize = Size(width: 0, height: 0)
 
-method updateLayout*(comp: ContentOffsetView, availableSize: Size) =
+method updateLayout*(comp: ContentWidget, availableSize: Size) =
   var newSize = availableSize
   applyMinMaxConstraint(newSize, comp.minConstraint, comp.maxConstraint)
 
@@ -50,7 +62,7 @@ method updateLayout*(comp: ContentOffsetView, availableSize: Size) =
     return
 
   var contentSizeChanged = false
-  let child = comp.parent.getFirstChildWithUiComponent()
+  let child = comp.parent.getFirstChildWithWidget()
   if child.isSome:
     let (childNode, childComp) = child.get()
     childNode.x = float32(comp.padding.left + comp.contentOffsetX)
@@ -75,7 +87,7 @@ method updateLayout*(comp: ContentOffsetView, availableSize: Size) =
   comp.size = newSize
   if contentSizeChanged and (not comp.onContentSizeChanged.isNil):
     comp.onContentSizeChanged(comp)
-  echo "ContentOffSetLayout size: ", comp.size
+  echo "ContentWidget size: ", comp.size
 
-method draw*(comp: ContentOffsetView, camera: Camera) =
+method draw*(comp: ContentWidget, camera: Camera) =
   discard

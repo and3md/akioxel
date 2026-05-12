@@ -89,7 +89,7 @@ type
   ClosureComponent* = ref object of Component ## Component that runs onUpdate callback
     onUpdate*: proc(self: ClosureComponent, deltaTime: float)
 
-  UiComponent* = ref object of RenderedComponent ## Base component for all UI components
+  Widget* = ref object of RenderedComponent ## Base component for all UI components
     minSize*: Size ## Minimum size with paddings calculated in calculateMinSize method
     minConstraint: Size
       ## Allows you to set the minimum size with paddings, 0,0 means no constraints
@@ -427,14 +427,14 @@ proc drawBoundingBox*(comp: RenderedComponent, camera: Camera) =
 method update*(self: ScriptComponent, deltaTime: float32) =
   echo "Empty script"
 
-# UiComponent ----------------------------------------------
+# Widget ----------------------------------------------
 
-proc initUiComponent*(comp: UiComponent, name: string) =
+proc initWidget*(comp: Widget, name: string) =
   initRenderedComponent(comp, name)
 
 proc getRootNode*(node: Node): RootNode
 
-proc uiNeedsMinSizeUpdate*(comp: UiComponent) =
+proc uiNeedsMinSizeUpdate*(comp: Widget) =
   ## Call when component min size should be recaluculated for e.g constraints chages, padding changes, min size changed, new child added
   ## This run also uiNeedsLayoutUpdate
   let parent = comp.parent
@@ -444,7 +444,7 @@ proc uiNeedsMinSizeUpdate*(comp: UiComponent) =
       rootNode.needUiMinSizeUpdate = true
       rootNode.needUiLayoutUpdate = true
 
-proc uiNeedsLayoutUpdate*(comp: UiComponent) =
+proc uiNeedsLayoutUpdate*(comp: Widget) =
   ## Call when component min size not changes but window size changed, or something is hidden, width, height factor changes
   let parent = comp.parent
   if not parent.isNil:
@@ -452,77 +452,77 @@ proc uiNeedsLayoutUpdate*(comp: UiComponent) =
     if not rootNode.isNil:
       rootNode.needUiLayoutUpdate = true
 
-proc size*(comp: UiComponent): Size =
+proc size*(comp: Widget): Size =
   return comp.size
 
-proc minConstraint*(comp: UiComponent): Size =
+proc minConstraint*(comp: Widget): Size =
   return comp.minConstraint
 
-proc `minConstraint=`*(comp: UiComponent, newMinSize: Size) =
+proc `minConstraint=`*(comp: Widget, newMinSize: Size) =
   if comp.minConstraint == newMinSize:
     return
   comp.minConstraint = newMinSize
   comp.uiNeedsMinSizeUpdate
 
-proc maxConstraint*(comp: UiComponent): Size =
+proc maxConstraint*(comp: Widget): Size =
   return comp.maxConstraint
 
-proc `maxConstraint=`*(comp: UiComponent, newMaxSize: Size) =
+proc `maxConstraint=`*(comp: Widget, newMaxSize: Size) =
   if comp.maxConstraint == newMaxSize:
     return
   comp.maxConstraint = newMaxSize
   comp.uiNeedsMinSizeUpdate
 
-proc heightFactor*(comp: UiComponent): int32 =
+proc heightFactor*(comp: Widget): int32 =
   return comp.heightFactor
 
-proc `heightFactor=`*(comp: UiComponent, newHeightFactor: int32) =
+proc `heightFactor=`*(comp: Widget, newHeightFactor: int32) =
   if comp.heightFactor == newHeightFactor:
     return
   comp.heightFactor = newHeightFactor
   comp.uiNeedsLayoutUpdate
 
-proc widthFactor*(comp: UiComponent): int32 =
+proc widthFactor*(comp: Widget): int32 =
   return comp.widthFactor
 
-proc `widthFactor=`*(comp: UiComponent, newWidthFactor: int32) =
+proc `widthFactor=`*(comp: Widget, newWidthFactor: int32) =
   if comp.widthFactor == newWidthFactor:
     return
   comp.widthFactor = newWidthFactor
   comp.uiNeedsLayoutUpdate
 
-proc padding*(comp: UIComponent): UiPadding =
+proc padding*(comp: Widget): UiPadding =
   return comp.padding
 
-proc `size=`*(comp: UiComponent, newSize: Size) =
+proc `size=`*(comp: Widget, newSize: Size) =
   if comp.size == newSize:
     return
   comp.size = newSize
   if comp.isExisting and (not comp.parent.isNil):
     comp.parent.isDirty = true
 
-method componentAddedToRoot(comp: UiComponent, root: RootNode) =
+method componentAddedToRoot(comp: Widget, root: RootNode) =
   root.needUiMinSizeUpdate = true
   root.needUiLayoutUpdate = true
   root.hasUi = true
 
-method draw*(comp: UiComponent, camera: Camera) =
+method draw*(comp: Widget, camera: Camera) =
   echo "draw ui component"
 
-method calculateMinSize*(comp: UiComponent) =
+method calculateMinSize*(comp: Widget) =
   ## Method to calculate minimum size
   comp.minSize = Size(width: 0, height: 0)
 
-method updateLayout*(comp: UiComponent, availableSize: Size) {.base.} =
+method updateLayout*(comp: Widget, availableSize: Size) {.base.} =
   ## Method to update layout, only used by layout components
   discard
 
-method update*(comp: UiComponent, deltaTime: float32) =
+method update*(comp: Widget, deltaTime: float32) =
   ## Widget code that need to be run every frame,
   ## Size calculation should be done in calculateMinSize and updateSize
   discard
 
-method worldBoundingBox*(comp: UiComponent): Rect =
+method worldBoundingBox*(comp: Widget): Rect =
   let parent = comp.parent
   if parent.isNil:
     raise newException(
@@ -548,6 +548,10 @@ proc initNode*(self: Node, x, y, scaleX, scaleY, rot: float32) =
 
 proc initNode*(self: Node, x, y: float32) =
   initNode(self, x, y, 1.0, 1.0, 0.0)
+
+proc newNode*(): Node =
+  result = new(Node)
+  initNode(result, 0'f32, 0'f32, 1'f32, 1'f32, 0'f32)
 
 proc newNode*(x, y: float): Node =
   result = new(Node)
@@ -661,9 +665,9 @@ iterator getChildrenWithFirstComponentOfType*[T](
     if not comp.isNil:
       yield (node: n, comp: comp)
 
-iterator getChildrenWithUi*(node: Node): tuple[node: Node, comp: UiComponent] =
-  ## Iterator that returns tuple with Node and first UiComponent from the Node
-  for n in getChildrenWithFirstComponentOfType[UiComponent](node):
+iterator getChildrenWithUi*(node: Node): tuple[node: Node, comp: Widget] =
+  ## Iterator that returns tuple with Node and first Widget from the Node
+  for n in getChildrenWithFirstComponentOfType[Widget](node):
     yield n
 
 proc getFirstChildWithComponentOfType*[T](
@@ -677,11 +681,11 @@ proc getFirstChildWithComponentOfType*[T](
       return some((node: child, comp: comp))
   return none(tuple[node: Node, comp: T])
 
-proc getFirstChildWithUiComponent*(
+proc getFirstChildWithWidget*(
     node: Node
-): Option[tuple[node: Node, comp: UiComponent]] =
-  ## Returns first child width UiComponent
-  return getFirstChildWithComponentOfType[UiComponent](node)
+): Option[tuple[node: Node, comp: Widget]] =
+  ## Returns first child with Widget
+  return getFirstChildWithComponentOfType[Widget](node)
 
 method calculateWorldBoundingBox(node: Node): Rect =
   var wasFirst = false
@@ -794,8 +798,8 @@ proc doUpdate(node: Node, deltaTime: float) =
   for comp in node.components:
     if not comp.isExisting:
       continue
-    if comp of UiComponent:
-      update(UiComponent(comp), deltaTime)
+    if comp of Widget:
+      update(Widget(comp), deltaTime)
     if comp of ScriptComponent:
       update(ScriptComponent(comp), deltaTime)
     elif comp of ClosureComponent:

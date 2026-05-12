@@ -1,11 +1,13 @@
 import ../../base_types
+import ../../utils
 import math
 from raylib as ray import nil
 import alignment
 
-type
+var lastGenNameNumber: uint32 = 0 
 
-  HLayout = ref object of UiComponent
+type
+  HLayout = ref object of Widget
     spacing: int32
     vAlignment: VAlignment
     hAlignment: HAlignment
@@ -14,12 +16,21 @@ type
     maxHeight: int32 = 0 ## Max width for calculated min size
     widthFactorSum: int32 = 0
 
-proc newHLayout*(name: string): HLayout =
+proc newHLayout*(parentNode: Node, name: string = ""): HLayout =
   result = new(HLayout)
-  initUiComponent(result, name)
+  initWidget(result, generateName(name, "HLayout", lastGenNameNumber))
   result.spacing = 2
   result.vAlignment = VAlignment.Center
   result.hAlignment = HAlignment.Center
+  if not parentNode.isNil:
+    parentNode.addComponent(result)
+
+proc newNodeWithHLayout(parentNode: Node, widgetName: string =""): tuple[node: Node, widget: HLayout] =
+  ## Shortcut create widget with node and add it to parent node
+  result.node = newNode()
+  result.widget = newHLayout(result.node, widgetName)
+  if not parentNode.isNil:
+    parentNode.addChild(result.node)
 
 proc vAlignment*(comp: HLayout): VAlignment =
   return comp.vAlignment
@@ -127,7 +138,7 @@ method updateLayout*(comp: HLayout, availableSize: Size) =
     of HAlignment.Right:
       x += remainingWidth
 
-  var children: seq[tuple[node: Node, comp: UiComponent]]
+  var children: seq[tuple[node: Node, comp: Widget]]
   for r in parent.getChildrenWithUi:
     if not r.comp.isExisting:
       continue

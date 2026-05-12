@@ -1,4 +1,5 @@
 import ../../base_types
+import ../../utils
 import ../../colors
 import ../../matrices
 import math
@@ -6,8 +7,10 @@ import button_state
 import orientation
 from raylib as ray import nil
 
+var lastGenNameNumber: uint32 = 0 
+
 type
-  ScrollBar* = ref object of UiComponent
+  ScrollBarWidget* = ref object of Widget
     orientation: Orientation
     maxValue: int32 = 100
     value: int32 = 0
@@ -19,22 +22,31 @@ type
 
 const scrollBarThicknes = 15
 
-proc `orientation=`*(comp: ScrollBar, newOrientation: Orientation)
+proc `orientation=`*(comp: ScrollBarWidget, newOrientation: Orientation)
 
-proc newScrollBar*(orientation: Orientation, name: string): ScrollBar =
-  result = new(ScrollBar)
-  initUiComponent(result, name)
+proc newScrollBarWidget*(parentNode: Node, orientation: Orientation, name: string = ""): ScrollBarWidget =
+  result = new(ScrollBarWidget)
+  initWidget(result, generateName(name, "ScrollBarWidget", lastGenNameNumber))
   `orientation=`(result, orientation)
   result.backgroundColor = Black
   result.thumbColor[ButtonState.Up] = Blue
   result.thumbColor[ButtonState.Down] = Red
   result.thumbColor[ButtonState.Hover] = Yellow
   result.thumbState = ButtonState.Up
+  if not parentNode.isNil:
+    parentNode.addComponent(result)
+  
+proc newNodeWithScrollBarWidget*(parentNode: Node, orientation: Orientation, widgetName: string = ""): tuple[node: Node, widget: ScrollBarWidget] =
+  ## Shortcut create widget with node and add it to parent node
+  result.node = newNode()
+  result.widget = newScrollBarWidget(result.node, orientation, widgetName)
+  if not parentNode.isNil:
+    parentNode.addChild(result.node)
 
-proc orientation*(comp: ScrollBar): Orientation =
+proc orientation*(comp: ScrollBarWidget): Orientation =
   return comp.orientation
 
-proc `orientation=`*(comp: ScrollBar, newOrientation: Orientation) =
+proc `orientation=`*(comp: ScrollBarWidget, newOrientation: Orientation) =
   if comp.orientation == newOrientation:
     return
   comp.orientation = newOrientation
@@ -47,26 +59,26 @@ proc `orientation=`*(comp: ScrollBar, newOrientation: Orientation) =
     comp.heightFactor = 1
   comp.uiNeedsMinSizeUpdate
 
-proc maxValue*(comp: ScrollBar): int32 =
+proc maxValue*(comp: ScrollBarWidget): int32 =
   return comp.maxValue
 
-proc `maxValue=`*(comp: ScrollBar, newMaxValue: int32) =
+proc `maxValue=`*(comp: ScrollBarWidget, newMaxValue: int32) =
   if comp.maxValue == newMaxValue:
     return
   comp.maxValue = newMaxValue
   # TODO: should be value changed
 
-proc value*(comp: ScrollBar): int32 =
+proc value*(comp: ScrollBarWidget): int32 =
   return comp.value
 
-proc `value=`*(comp: ScrollBar, newValue: int32) =
+proc `value=`*(comp: ScrollBarWidget, newValue: int32) =
   if comp.value == newValue:
     return
   comp.value = newValue
   if not comp.onValueChanged.isNil:
     comp.onValueChanged(newValue)
 
-method calculateMinSize*(comp: ScrollBar) =
+method calculateMinSize*(comp: ScrollBarWidget) =
   var newMinSize =
     if comp.orientation == Orientation.Horizontal:
       Size(width: 30, height: scrollBarThicknes)
@@ -75,7 +87,7 @@ method calculateMinSize*(comp: ScrollBar) =
   applyMinMaxConstraint(newMinSize, comp.minConstraint, comp.maxConstraint)
   comp.minSize = newMinSize
 
-method draw*(comp: ScrollBar, camera: Camera) =
+method draw*(comp: ScrollBarWidget, camera: Camera) =
   let data = comp.decomposedTransform(camera)
   ray.drawRectangle(
     ray.Rectangle(

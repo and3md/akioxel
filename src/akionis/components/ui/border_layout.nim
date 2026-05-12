@@ -1,7 +1,10 @@
 import ../../base_types
+import ../../utils
 import math
 from raylib as ray import nil
 import alignment
+
+var lastGenNameNumber: uint32 = 0 
 
 type
   BorderLayoutPosition* {.pure.} = enum
@@ -13,7 +16,7 @@ type
 
   BorderLayoutPositions = set[BorderLayoutPosition]
 
-  BorderLayout* = ref object of UiComponent
+  BorderLayout* = ref object of Widget
     ## The layout that the first child takes as the center, the next as the right side,
     ## the next as the bottom side, the next as the left side, the next as the top side,
     ##
@@ -29,14 +32,21 @@ type
     highestColumn: BorderLayoutPosition ## Left, Center or Right
 
 proc initBorderLayout*(comp: BorderLayout, name: string) =
-  initUiComponent(comp, name)
+  initWidget(comp, generateName(name, "BorderLayout", lastGenNameNumber))
   comp.spacing = 2
   comp.vAlignment = VAlignment.Top
   comp.hAlignment = HAlignment.Left
 
-proc newBorderLayout*(name: string): BorderLayout =
+proc newBorderLayout*(parentNode: Node, name: string = ""): BorderLayout =
   result = new (BorderLayout)
   initBorderLayout(result, name)
+  parentNode.addComponent(result)
+
+proc newNodeWithBorderLayout*(parentNode: Node, widgetName: string = ""): tuple[node: Node, widget: BorderLayout] =
+  ## Shortcut create widget with node and add it to parent node
+  result.node = newNode()
+  result.widget = newBorderLayout(result.node, widgetName)
+  parentNode.addChild(result.node)
 
 proc vAlignment*(comp: BorderLayout): VAlignment =
   return comp.vAlignment
@@ -85,7 +95,7 @@ method calculateMinSize*(comp: BorderLayout) =
     return
 
   var currentPos: BorderLayoutPosition = BorderLayoutPosition.Center
-  var childrenArray: array[BorderLayoutPosition, tuple[node: Node, comp: UiComponent]]
+  var childrenArray: array[BorderLayoutPosition, tuple[node: Node, comp: Widget]]
   var availablePositions: BorderLayoutPositions
   for r in parent.getChildrenWithUi:
     if not r.comp.isExisting:
@@ -245,7 +255,7 @@ method updateLayout*(comp: BorderLayout, availableSize: Size) =
 
   # Get available positions and children array
   var currentPos: BorderLayoutPosition = BorderLayoutPosition.Center
-  var childrenArray: array[BorderLayoutPosition, tuple[node: Node, comp: UiComponent]]
+  var childrenArray: array[BorderLayoutPosition, tuple[node: Node, comp: Widget]]
   var availablePositions: BorderLayoutPositions
   for r in parent.getChildrenWithUi:
     if not r.comp.isExisting:
