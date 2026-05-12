@@ -20,6 +20,7 @@ type
     backgroundColor: Color
     thumbColor: array[ButtonState, Color]
     thumbState: ButtonState
+    mouseDeltaAccum: float32
 
 const scrollBarThicknes = 15
 
@@ -205,9 +206,19 @@ method update*(comp: ScrollBarWidget, deltaTime: float32) =
   let pixelThumbRect = comp.getThumbPixelRect()
 
   if pointInsideRect(pixelThumbRect, localMousePoint):
-     if ray.isMouseButtonDown(ray.MouseButton.Left):
-       comp.thumbState = ButtonState.Down
-     else:
-       comp.thumbState = ButtonState.Hover
+    if ray.isMouseButtonDown(ray.MouseButton.Left):
+      if comp.thumbState == ButtonState.Down:
+        # was down before check mouse movement
+        let delta = getValueForOrientation(ray.getMouseDelta(), comp.orientation)
+        #echo "delta ", delta
+        comp.mouseDeltaAccum += delta
+        if comp.mouseDeltaAccum > 1 or comp.mouseDeltaAccum < -1:
+          comp.`value=`(max(0, min(comp.maxValue - comp.thumbSize, comp.value + comp.mouseDeltaAccum.int32)))
+          comp.mouseDeltaAccum = comp.mouseDeltaAccum - comp.mouseDeltaAccum.int32.float32
+      else:  
+        comp.thumbState = ButtonState.Down
+    else:
+      comp.thumbState = ButtonState.Hover
   else:
-     comp.thumbState = ButtonState.Up
+    comp.thumbState = ButtonState.Up
+    comp.mouseDeltaAccum = 0'f32
