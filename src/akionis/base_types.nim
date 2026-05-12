@@ -59,6 +59,7 @@ type
     parent: Node
     components: seq[Component]
     worldMatrix: Matrix3
+    invWorldMatrix: Matrix3
     cachedWorldBoundingBox: Rect
     x: float32
     y: float32
@@ -715,6 +716,7 @@ proc updateTransforms(node: Node, parentMatrix: Matrix3, isParentDirty: bool): b
     node.worldMatrix =
       parentMatrix * translate(vec2(node.x, node.y)) * rotate(-node.rotation) *
       scale(vec2(node.scaleX, node.scaleY))
+    node.invWorldMatrix = node.worldMatrix.inverse
 
   result = isParentDirty or node.isDirty
   for child in node.children:
@@ -724,6 +726,12 @@ proc updateTransforms(node: Node, parentMatrix: Matrix3, isParentDirty: bool): b
   if result:
     node.cachedWorldBoundingBox = node.calculateWorldBoundingBox
   node.isDirty = false
+
+proc worldPointToLocal*(node: Node, worldPoint: Vector2): Vector2 =
+  ## Returns point from world in local coordinate system
+  let localPointVec3 = node.invWorldMatrix * vec3(worldPoint.x, worldPoint.y, 1.0)
+  result.x = localPointVec3.x
+  result.y = localPointVec3.y
 
 proc drawComponentsBoundingBoxes*(node: Node, camera: Camera) =
   for comp in node.components:
