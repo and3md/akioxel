@@ -48,6 +48,12 @@ proc newNodeWithBorderLayout*(parentNode: Node, widgetName: string = ""): tuple[
   result.widget = newBorderLayout(result.node, widgetName)
   parentNode.addChild(result.node)
 
+proc newNodeWithBorderLayout*(parentNode: Node, x, y: float32, widgetName: string = ""): tuple[node: Node, widget: BorderLayout] =
+  ## Shortcut create widget with node and add it to parent node
+  result.node = newNode(x, y)
+  result.widget = newBorderLayout(result.node, widgetName)
+  parentNode.addChild(result.node)
+
 proc vAlignment*(comp: BorderLayout): VAlignment =
   return comp.vAlignment
 

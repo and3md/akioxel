@@ -33,6 +33,16 @@ proc newNodeWithVLayout*(
   if not parentNode.isNil:
     parentNode.addChild(result.node)
 
+proc newNodeWithVLayout*(
+    parentNode: Node, x, y: float32, widgetName: string = ""
+): tuple[node: Node, widget: VLayout] =
+  ## Shortcut create widget with node and add it to parent node
+  result.node = newNode(x, y)
+  result.widget = newVLayout(result.node, widgetName)
+  if not parentNode.isNil:
+    parentNode.addChild(result.node)
+
+
 proc vAlignment*(comp: VLayout): VAlignment =
   return comp.vAlignment
 

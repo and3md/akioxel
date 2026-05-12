@@ -32,6 +32,14 @@ proc newNodeWithHLayout*(parentNode: Node, widgetName: string =""): tuple[node: 
   if not parentNode.isNil:
     parentNode.addChild(result.node)
 
+proc newNodeWithHLayout*(parentNode: Node, x, y: float32, widgetName: string =""): tuple[node: Node, widget: HLayout] =
+  ## Shortcut create widget with node and add it to parent node
+  result.node = newNode(x, y)
+  result.widget = newHLayout(result.node, widgetName)
+  if not parentNode.isNil:
+    parentNode.addChild(result.node)
+
+
 proc vAlignment*(comp: HLayout): VAlignment =
   return comp.vAlignment
 
