@@ -23,3 +23,4 @@ import akionis/components/ui/scroll_layout
 export
   matrices, colors, base_types, game_loop, square, button, alignment, vlayout, hlayout,
   rectangle_view, border_layout, scroll_bar, button_state, content_offset_view, utils,
+  textures, image, orientation, scroll_layout
