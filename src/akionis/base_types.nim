@@ -627,6 +627,7 @@ proc nodeAddedToRoot(node: Node, rootNode: RootNode) =
 
 proc addChild*(parentNode, newChild: Node) =
   parentNode.children.add(newChild)
+  newChild.parent = parentNode
   let rootNode = parentNode.getRootNode
   if not rootNode.isNil:
     nodeAddedToRoot(newChild, rootNode)
