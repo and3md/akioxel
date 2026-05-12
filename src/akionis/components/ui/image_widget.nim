@@ -20,7 +20,7 @@ proc newImageWidget*(parentNode: Node, texture: SharedTexture, name: string = ""
   if not parentNode.isNil:
     parentNode.addComponent(result)
 
-proc newNodeWithImageWidget(parentNode: Node, texture: SharedTexture, widgetName: string = ""): tuple[node:Node, widget: ImageWidget] =
+proc newNodeWithImageWidget*(parentNode: Node, texture: SharedTexture, widgetName: string = ""): tuple[node:Node, widget: ImageWidget] =
   ## Shortcut create widget with node and add it to parent node
   result.node = newNode()
   result.widget = newImageWidget(result.node, texture, widgetName)
