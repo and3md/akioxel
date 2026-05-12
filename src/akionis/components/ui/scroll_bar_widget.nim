@@ -91,6 +91,36 @@ method calculateMinSize*(comp: ScrollBarWidget) =
   applyMinMaxConstraint(newMinSize, comp.minConstraint, comp.maxConstraint)
   comp.minSize = newMinSize
 
+proc getThumbPixelRect(comp: ScrollBarWidget): Rect =
+  ## Gets local pixel thumb rect
+  let pixelWidth =
+    if comp.orientation == Orientation.Horizontal:
+      comp.size.width.float32
+    else:
+      comp.size.height.float32
+
+  let pixelUnitValue =  pixelWidth / comp.maxValue.float32
+  let pixelValue = pixelUnitValue * comp.value.float32
+  let pixelThumbSize = pixelUnitValue * comp.thumbSize.float32
+
+  result.x = if comp.orientation == Orientation.Horizontal:
+    comp.offsetX + pixelValue
+  else:
+    comp.offsetX
+  result.y = if comp.orientation == Orientation.Horizontal:
+    comp.offsetY
+  else:
+    comp.offsetY + pixelValue
+  result.width = if comp.orientation == Orientation.Horizontal:
+    pixelThumbSize
+  else:
+    comp.size.width.float32
+  result.height = if comp.orientation == Orientation.Horizontal:
+    comp.size.height.float32
+  else:
+    pixelThumbSize
+  
+
 method draw*(comp: ScrollBarWidget, camera: Camera) =
   let data = comp.decomposedTransform(camera)
 
@@ -147,3 +177,28 @@ method draw*(comp: ScrollBarWidget, camera: Camera) =
     radToDeg(data.angle),
     comp.thumbColor[comp.thumbState],
   )
+
+
+
+method update*(comp: ScrollBarWidget, deltaTime: float32) =
+  ## Updates button state
+  let parent = comp.parent
+  if parent.isNil:
+    return
+  let camera = getGame().getFirstCameraFromMask(comp.cameras)
+  if camera.isNil:
+    return
+
+  let mousePos = ray.getMousePosition()
+  let worldMousePoint = screenPointToWorld(camera, mousePos)
+  let localMousePoint = parent.worldPointToLocal(worldMousePoint)
+
+  let pixelThumbRect = comp.getThumbPixelRect()
+
+  if pointInsideRect(pixelThumbRect, localMousePoint):
+     if ray.isMouseButtonDown(ray.MouseButton.Left):
+       comp.thumbState = ButtonState.Down
+     else:
+       comp.thumbState = ButtonState.Hover
+  else:
+     comp.thumbState = ButtonState.Up
