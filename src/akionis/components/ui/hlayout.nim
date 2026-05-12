@@ -25,7 +25,7 @@ proc newHLayout*(parentNode: Node, name: string = ""): HLayout =
   if not parentNode.isNil:
     parentNode.addComponent(result)
 
-proc newNodeWithHLayout(parentNode: Node, widgetName: string =""): tuple[node: Node, widget: HLayout] =
+proc newNodeWithHLayout*(parentNode: Node, widgetName: string =""): tuple[node: Node, widget: HLayout] =
   ## Shortcut create widget with node and add it to parent node
   result.node = newNode()
   result.widget = newHLayout(result.node, widgetName)
