@@ -2,8 +2,8 @@ import matrices
 from raylib as ray import nil
 
 type
-  MouseButton = ray.MouseButton
-  KeyboardKey = ray.KeyboardKey
+  MouseButton* = ray.MouseButton
+  KeyboardKey* = ray.KeyboardKey
 
   Event* = ref object of RootObj
     isHandled*: bool
