@@ -1127,10 +1127,10 @@ proc handleEvents*(game: Game) =
 
   # Mouse press/release event
   for button in MouseButton:
-    if ray.isMouseButtonDown(button):
+    if ray.isMouseButtonPressed(button):
       let event = newMousePressEvent(mouseScreenPos, button)
       game.state.doProcessEvent(event)
-    if ray.isMouseButtonUp(button):
+    if ray.isMouseButtonReleased(button):
       let event = newMouseReleaseEvent(mouseScreenPos, button)
       game.state.doProcessEvent(event)
 
