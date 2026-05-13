@@ -13,6 +13,7 @@ proc run*(game: Game, state: State) =
   while not ray.windowShouldClose():
     if game.wasResize():
       game.doResize()
+    game.handleEvents()
     game.updateGame(ray.getFrameTime())
     game.updateTransforms
     game.renderGameToTexture

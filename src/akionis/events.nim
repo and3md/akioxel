@@ -10,6 +10,8 @@ type
 
   MouseEvent* = ref object of Event
     screenMousePos*: Vector2
+      ## We use screen mouse pos not world mouse pos because we don't want add iteration over cameras
+      ## Let user decide what it should do 
 
   MousePressEvent* = ref object of MouseEvent
     pressedButton: MouseButton

@@ -334,6 +334,8 @@ proc rectInCamera(cam: Camera, rect: var Rect): OrientedRect =
   result.corners[3].y = c4.y
 
 proc worldPointToLocal*(node: Node, worldPoint: Vector2): Vector2
+proc getFirstActiveCameraFromMask*(game: Game, camId: CameraMask): Camera
+proc getGame*(): Game
 
 # Component ------------------------------------------------
 
@@ -532,11 +534,11 @@ method updateLayout*(comp: Widget, availableSize: Size) {.base.} =
   ## Method to update layout, only used by layout components
   discard
 
-method processEvent*(comp: Widget, event: var Event) =
+method processEvent*(comp: Widget, event: Event) =
   ## Event processing for this component
   discard
 
-proc doProcessEvent*(comp: Widget, event: var Event) =
+proc doProcessEvent*(comp: Widget, event: Event) =
   if event.isHandled:
     return
   if not comp.isExisting:
@@ -553,7 +555,9 @@ proc doProcessEvent*(comp: Widget, event: var Event) =
     if rootNode.isNil:
       return
     let mouseEvent = MouseEvent(event)
-    let localMousePos = parent.worldPointToLocal(mouseEvent.worldMousePos)
+    let camera = getGame().getFirstActiveCameraFromMask(comp.cameras)
+    let worldMousePos = screenPointToWorld(camera, mouseEvent.screenMousePos)
+    let localMousePos = parent.worldPointToLocal(worldMousePos)
     shouldProcess = pointInsideRect(comp.getWidgetArea(), localMousePos) or rootNode.mouseEventTarget == comp
 
   if shouldProcess:
@@ -872,6 +876,23 @@ proc doUpdate(node: Node, deltaTime: float) =
 
 # RootNode -------------------------------------------------
 
+proc doProcessEvent(node: RootNode, event: Event) =
+  if event.isHandled:
+    return
+
+  if not node.hasUi:
+    return
+
+  # Check only first level children when found Widget run its doProcessEvent
+  # that works recursively
+  for i in countdown(node.children.len - 1, 0):
+    let rootChild =  node.children[i]
+    for comp in rootChild.components:
+      if comp of Widget:
+        doProcessEvent(Widget(comp), event)
+        if event.isHandled:
+          return
+
 proc updateAllTransforms(node: RootNode) =
   ## Updates world matricies with checking dirty flags, and updates ui sizes when needed
   ## 
@@ -966,12 +987,28 @@ method start*(state: State) =
 method stop*(state: State) =
   echo "Stop state ", state.name
 
+method processEvent*(state: State, event: Event) =
+  discard
+
 proc doClose(state: State) =
   ## Takes care of recursive close of all states
   # Close child state first
   if not state.subState.isNil:
     state.subState.doClose
   state.close
+
+proc doProcessEvent(state: State, event: Event) =
+  if event.isHandled:
+    return
+  if not state.subState.isNil:
+    state.substate.doProcessEvent(event)
+    if event.isHandled:
+      return
+    if not state.rootNode.isNil:
+      state.rootNode.doProcessEvent(event)
+    if event.isHandled:
+      return
+    state.processEvent(event)
 
 proc doUpdate(state: State, deltaTime: float32) =
   ## Takes care of correct updating everything
@@ -1068,6 +1105,21 @@ proc openRootState*(game: Game, state: State) =
     game.state.doClose
   game.state = state
   state.start
+
+proc handleEvents*(game: Game) =
+  ## Should run only once per frame
+  
+  if game.state.isNil:
+    # Do nothing when there is no state
+    return
+  
+  let mouseDeltaMove = ray.getMouseDelta()
+  if not isZero(mouseDeltaMove):
+    let mouseScreenPos = ray.getMousePosition()
+    # this is the first approach, we use first camera to check event should
+    # be delivered and Widget size
+    var event = newMouseMoveEvent(mouseScreenPos, mouseDeltaMove)
+    game.state.doProcessEvent(event)
 
 proc updateGame*(game: Game, deltaTime: float32) =
   #echo ("update - start")
