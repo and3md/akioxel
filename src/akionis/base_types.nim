@@ -1,6 +1,7 @@
 import std/options
 import vmath
 import matrices
+import events
 import colors
 from raylib as ray import nil
 
@@ -73,6 +74,7 @@ type
     hasUi: bool ## Does this hierarchy have ui elements?
     needUiMinSizeUpdate: bool ## Should Ui recalculate its size
     needUiLayoutUpdate: bool ## Should Ui update its layout
+    mouseEventTarget*: Widget ## Widget that intercepts mouse events
 
   Component* = ref object of RootObj
     name*: string
