@@ -1,6 +1,4 @@
-
-type
-  ButtonState* {.pure.} = enum
-    Up
-    Down
-    Hover
+type ButtonState* {.pure.} = enum
+  Up
+  Down
+  Hover

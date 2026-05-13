@@ -1,26 +1,24 @@
 import ../../base_types
 import math
 from raylib as ray import nil
-import alignment
 import border_layout
 import scroll_bar_widget
 import orientation
 import content_widget
 
-type ScrollLayout = ref object of BorderLayout
-  scrollBar: array[Orientation, ScrollBarWidget]
+proc updateScrollBars(
+  comp: ContentWidget, vertScrollBar, horizScrollBar: ScrollBarWidget
+)
 
-proc updateScrollBars(comp: ContentWidget, vertScrollBar, horizScrollBar: ScrollBarWidget)
-
-
-proc newNodeWithScrollArea*(parentNode: Node): tuple[node: Node, contentWidget: ContentWidget, borderLayout: BorderLayout] = 
+proc newNodeWithScrollArea*(
+    parentNode: Node
+): tuple[node: Node, contentWidget: ContentWidget, borderLayout: BorderLayout] =
   ## Combines some nodes and widgets to make scroll area
   ## 
   ## Result fields:
   ## - node - content widget node
   ## - contentWidget - inner ContentWidget component
   ## - borderLayout - outer BorderLayout component
-  echo("create scroll area")
   let borderLayout = newNodeWithBorderLayout(parentNode)
   result.borderLayout = borderLayout.widget
 
@@ -28,8 +26,10 @@ proc newNodeWithScrollArea*(parentNode: Node): tuple[node: Node, contentWidget: 
   result.node = contentWidget.node
   result.contentWidget = contentWidget.widget
 
-  let vertScrollBar = newNodeWithScrollBarWidget(borderLayout.node, Orientation.Vertical)
-  let horizScrollBar = newNodeWithScrollBarWidget(borderLayout.node, Orientation.Horizontal, "scrollBar")
+  let vertScrollBar =
+    newNodeWithScrollBarWidget(borderLayout.node, Orientation.Vertical)
+  let horizScrollBar =
+    newNodeWithScrollBarWidget(borderLayout.node, Orientation.Horizontal, "scrollBar")
 
   contentWidget.widget.onContentSizeChanged = proc(comp: ContentWidget) =
     updateScrollBars(comp, vertScrollBar.widget, horizScrollBar.widget)
@@ -37,14 +37,16 @@ proc newNodeWithScrollArea*(parentNode: Node): tuple[node: Node, contentWidget: 
   contentWidget.widget.onSizeChanged = proc(comp: Widget) =
     if comp of ContentWidget:
       updateScrollBars(ContentWidget(comp), vertScrollBar.widget, horizScrollBar.widget)
-  
+
   vertScrollBar.widget.onValueChanged = proc(newValue: int32) =
     contentWidget.widget.contentOffsetY = -newValue
 
   horizScrollBar.widget.onValueChanged = proc(newValue: int32) =
     contentWidget.widget.contentOffsetX = -newValue
 
-proc updateScrollBars(comp: ContentWidget, vertScrollBar, horizScrollBar: ScrollBarWidget) =
+proc updateScrollBars(
+    comp: ContentWidget, vertScrollBar, horizScrollBar: ScrollBarWidget
+) =
   var widthFits = comp.contentSize.width <= comp.size.width
   var heightFits = comp.contentSize.height <= comp.size.height
   if widthFits and heightFits:

@@ -5,7 +5,7 @@ import math
 import ../../utils
 from raylib as ray import nil
 
-var lastGenNameNumber: uint32 = 0 
+var lastGenNameNumber: uint32 = 0
 
 type RectangleWidget* = ref object of Widget
   color*: Color = Green
@@ -16,13 +16,17 @@ proc newRectangleWidget*(parentNode: Node, name: string = ""): RectangleWidget =
   if not parentNode.isNil:
     parentNode.addComponent(result)
 
-proc newRectangleWidget*(parentNode: Node, width: int32, height: int32, name: string = ""): RectangleWidget =
+proc newRectangleWidget*(
+    parentNode: Node, width: int32, height: int32, name: string = ""
+): RectangleWidget =
   result = new(RectangleWidget)
   initWidget(result, generateName(name, "RectangleWidget", lastGenNameNumber))
   result.minConstraint = Size(width: width, height: height)
   result.maxConstraint = Size(width: width, height: height)
 
-proc newNodeWithRectangleWidget*(parentNode: Node, widgetName: string = ""): tuple[node: Node, widget: RectangleWidget] =
+proc newNodeWithRectangleWidget*(
+    parentNode: Node, widgetName: string = ""
+): tuple[node: Node, widget: RectangleWidget] =
   ## Shortcut create widget with node and add it to parent node
   result.node = newNode()
   result.widget = newRectangleWidget(result.node, widgetName)
@@ -46,4 +50,3 @@ method calculateMinSize*(comp: RectangleWidget) =
   var newMinSize = Size(width: 100, height: 50)
   applyMinMaxConstraint(newMinSize, comp.minConstraint, comp.maxConstraint)
   comp.minSize = newMinSize
-

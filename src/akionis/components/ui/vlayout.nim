@@ -42,7 +42,6 @@ proc newNodeWithVLayout*(
   if not parentNode.isNil:
     parentNode.addChild(result.node)
 
-
 proc vAlignment*(comp: VLayout): VAlignment =
   return comp.vAlignment
 

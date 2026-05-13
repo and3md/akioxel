@@ -57,4 +57,3 @@ proc drawSharedTexture*(
   ray.drawTexture(
     tex.texture, srcRect, destRect, Vector2(x: 0'f32, y: 0'f32), rotation, tint
   )
-
