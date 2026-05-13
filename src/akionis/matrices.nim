@@ -57,6 +57,9 @@ const epsilon : float32 = 1e-7'f32
 proc isZero*(value: float32): bool =
   return abs(value) < epsilon
 
+proc isZero*(vec: Vector2): bool =
+  return isZero(vec.x) and isZero(vec.y)
+
 proc isRectEmpty*(rect: Rect): bool =
   return isZero(rect.width) and isZero(rect.height)
 
