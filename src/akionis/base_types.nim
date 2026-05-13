@@ -505,6 +505,13 @@ proc `size=`*(comp: Widget, newSize: Size) =
   if comp.isExisting and (not comp.parent.isNil):
     comp.parent.isDirty = true
 
+proc getWidgetArea*(comp: Widget): Rect =
+  ## Returns local pos and size rect
+  result.x = comp.offsetX
+  result.y = comp.offsetY
+  result.width = comp.size.width.float32
+  result.height = comp.size.height.float32
+
 method componentAddedToRoot(comp: Widget, root: RootNode) =
   root.needUiMinSizeUpdate = true
   root.needUiLayoutUpdate = true

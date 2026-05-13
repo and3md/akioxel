@@ -4,6 +4,7 @@ import akionis/base_types
 import akionis/game_loop
 import akionis/matrices
 import akionis/colors
+import akionis/events
 import akionis/textures
 import akionis/utils
 import akionis/components/square
@@ -21,7 +22,7 @@ import akionis/components/ui/orientation
 import akionis/components/ui/scroll_layout
 
 export
-  matrices, colors, base_types, game_loop, square, button_widget, alignment, vlayout, hlayout,
+  matrices, colors, events, base_types, game_loop, square, button_widget, alignment, vlayout, hlayout,
   rectangle_widget, border_layout, scroll_bar_widget, button_state, content_widget, utils,
   textures, image_widget, orientation, scroll_layout
 
