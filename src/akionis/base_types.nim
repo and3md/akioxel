@@ -1113,13 +1113,25 @@ proc handleEvents*(game: Game) =
     # Do nothing when there is no state
     return
   
+  # used in many events
+  let mouseScreenPos = ray.getMousePosition()
+
+  # Mouse move event
   let mouseDeltaMove = ray.getMouseDelta()
   if not isZero(mouseDeltaMove):
-    let mouseScreenPos = ray.getMousePosition()
     # this is the first approach, we use first camera to check event should
     # be delivered and Widget size
-    var event = newMouseMoveEvent(mouseScreenPos, mouseDeltaMove)
+    let event = newMouseMoveEvent(mouseScreenPos, mouseDeltaMove)
     game.state.doProcessEvent(event)
+
+  # Mouse press/release event
+  for button in MouseButton:
+    if ray.isMouseButtonDown(button):
+      let event = newMousePressEvent(mouseScreenPos, button)
+      game.state.doProcessEvent(event)
+    if ray.isMouseButtonUp(button):
+      let event = newMouseReleaseEvent(mouseScreenPos, button)
+      game.state.doProcessEvent(event)
 
 proc updateGame*(game: Game, deltaTime: float32) =
   #echo ("update - start")
