@@ -75,6 +75,8 @@ type
     needUiMinSizeUpdate: bool ## Should Ui recalculate its size
     needUiLayoutUpdate: bool ## Should Ui update its layout
     mouseEventTarget*: Widget ## Widget that intercepts mouse events
+    lastMouseHover: Widget
+    currentMouseHover: Widget
 
   Component* = ref object of RootObj
     name*: string
@@ -539,7 +541,7 @@ method processEvent*(comp: Widget, event: Event) =
   ## Event processing for this component
   discard
 
-proc doProcessEvent*(comp: Widget, event: Event) =
+proc doProcessEvent*(comp: Widget, event: Event, shouldResetCurrentHover: var bool) =
   if event.isHandled:
     return
   if not comp.isExisting:
@@ -559,18 +561,23 @@ proc doProcessEvent*(comp: Widget, event: Event) =
     let camera = getGame().getFirstActiveCameraFromMask(comp.cameras)
     let worldMousePos = screenPointToWorld(camera, mouseEvent.screenMousePos)
     let localMousePos = parent.worldPointToLocal(worldMousePos)
-    shouldProcess = pointInsideRect(comp.getWidgetArea(), localMousePos) or rootNode.mouseEventTarget == comp
-
+    var inside = pointInsideRect(comp.getWidgetArea(), localMousePos)
+    if inside:
+      shouldResetCurrentHover = false
+    shouldProcess = inside or rootNode.mouseEventTarget == comp
+    if event of MouseMoveEvent:
+      if shouldProcess:
+        rootNode.currentMouseHover = comp
+  
   if shouldProcess:
     # First we check children if no child handles the event
     # we run processEvent of this event
     for child in parent.children:
       for c in child.components:
         if c of Widget:
-          doProcessEvent(Widget(c), event)
+          doProcessEvent(Widget(c), event, shouldResetCurrentHover)
           if event.isHandled:
             return
-    
     # children did not handle the event, so this comp tries
     comp.processEvent(event)
 
@@ -886,13 +893,16 @@ proc doProcessEvent(node: RootNode, event: Event) =
 
   # Check only first level children when found Widget run its doProcessEvent
   # that works recursively
+  var shouldResetCurrentHover = true
   for i in countdown(node.children.len - 1, 0):
     let rootChild =  node.children[i]
     for comp in rootChild.components:
       if comp of Widget:
-        doProcessEvent(Widget(comp), event)
+        doProcessEvent(Widget(comp), event, shouldResetCurrentHover)
         if event.isHandled:
           return
+  if shouldResetCurrentHover:
+    node.currentMouseHover = nil
 
 proc updateAllTransforms(node: RootNode) =
   ## Updates world matricies with checking dirty flags, and updates ui sizes when needed
@@ -1005,11 +1015,27 @@ proc doProcessEvent(state: State, event: Event) =
     state.substate.doProcessEvent(event)
     if event.isHandled:
       return
+  var shouldCheckHover = false
   if not state.rootNode.isNil:
+    if event of MouseMoveEvent:
+      state.rootNode.lastMouseHover = state.rootNode.currentMouseHover
+      shouldCheckHover = true
     state.rootNode.doProcessEvent(event)
   if event.isHandled:
+    if shouldCheckHover:
+      if state.rootNode.lastMouseHover != state.rootNode.currentMouseHover:
+        if not state.rootNode.lastMouseHover.isNil:
+          state.rootNode.lastMouseHover.processEvent(newMouseExitEvent(ray.getMousePosition()))
+        if not state.rootNode.currentMouseHover.isNil:
+          state.rootNode.currentMouseHover.processEvent(newMouseEnterEvent(ray.getMousePosition()))
     return
   state.processEvent(event)
+  if shouldCheckHover:
+    if state.rootNode.lastMouseHover != state.rootNode.currentMouseHover:
+      if not state.rootNode.lastMouseHover.isNil:
+        state.rootNode.lastMouseHover.processEvent(newMouseExitEvent(ray.getMousePosition()))
+      if not state.rootNode.currentMouseHover.isNil:
+        state.rootNode.currentMouseHover.processEvent(newMouseEnterEvent(ray.getMousePosition()))
 
 proc doUpdate(state: State, deltaTime: float32) =
   ## Takes care of correct updating everything
