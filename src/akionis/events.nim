@@ -22,6 +22,9 @@ type
   MouseMoveEvent* = ref object of MouseEvent
     deltaMove: Vector2
 
+  MouseWheelMoveEvent* = ref object of MouseEvent
+    deltaWheelMove: Vector2
+
 proc newMousePressEvent*(
     screenMousePos: Vector2, pressedButton: MouseButton
 ): MousePressEvent =
@@ -42,3 +45,10 @@ proc newMouseMoveEvent*(
   result = new (MouseMoveEvent)
   result.screenMousePos = screenMousePos
   result.deltaMove = deltaMove
+
+proc newMouseWheelMoveEvent*(
+    screenMousePos, deltaWheelMove: Vector2
+): MouseWheelMoveEvent =
+  result = new (MouseWheelMoveEvent)
+  result.screenMousePos = screenMousePos
+  result.deltaWheelMove = deltaWheelMove

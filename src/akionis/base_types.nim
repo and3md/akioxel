@@ -1133,6 +1133,12 @@ proc handleEvents*(game: Game) =
       let event = newMouseReleaseEvent(mouseScreenPos, button)
       game.state.doProcessEvent(event)
 
+  # Mouse wheel event
+  let mouseWheelDelta = ray.getMouseWheelMoveV()
+  if not mouseWheelDelta.isZero():
+    let event = newMouseWheelMoveEvent(mouseScreenPos, mouseWheelDelta)
+    game.state.doProcessEvent(event)
+
 proc updateGame*(game: Game, deltaTime: float32) =
   #echo ("update - start")
   if not game.state.isNil:
