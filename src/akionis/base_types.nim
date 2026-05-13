@@ -1005,11 +1005,11 @@ proc doProcessEvent(state: State, event: Event) =
     state.substate.doProcessEvent(event)
     if event.isHandled:
       return
-    if not state.rootNode.isNil:
-      state.rootNode.doProcessEvent(event)
-    if event.isHandled:
-      return
-    state.processEvent(event)
+  if not state.rootNode.isNil:
+    state.rootNode.doProcessEvent(event)
+  if event.isHandled:
+    return
+  state.processEvent(event)
 
 proc doUpdate(state: State, deltaTime: float32) =
   ## Takes care of correct updating everything
