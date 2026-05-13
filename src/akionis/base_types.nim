@@ -1138,3 +1138,15 @@ proc getFirstCameraFromMask*(game: Game, camId: CameraMask): Camera =
     if cam.id == firstId:
       return cam
   return nil
+
+proc getFirstActiveCameraFromMask*(game: Game, camId: CameraMask): Camera =
+  var firstId = Camera1
+  for id in camId:
+    firstId = id
+    for cam in game.cameras:
+      if cam.id == firstId:
+        if cam.isActive:
+          return cam
+        else:
+          break
+  return nil
