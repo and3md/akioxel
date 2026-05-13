@@ -439,6 +439,7 @@ method update*(self: ScriptComponent, deltaTime: float32) =
 
 proc initWidget*(comp: Widget, name: string) =
   initRenderedComponent(comp, name)
+  comp.isEnabled = true
 
 proc getRootNode*(node: Node): RootNode
 
