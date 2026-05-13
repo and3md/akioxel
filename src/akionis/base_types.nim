@@ -562,7 +562,7 @@ proc doProcessEvent*(comp: Widget, event: Event, shouldResetCurrentHover: var bo
     let worldMousePos = screenPointToWorld(camera, mouseEvent.screenMousePos)
     let localMousePos = parent.worldPointToLocal(worldMousePos)
     var inside = pointInsideRect(comp.getWidgetArea(), localMousePos)
-    if inside:
+    if inside and event of MouseMoveEvent:
       shouldResetCurrentHover = false
     shouldProcess = inside or rootNode.mouseEventTarget == comp
     if event of MouseMoveEvent:
@@ -893,7 +893,7 @@ proc doProcessEvent(node: RootNode, event: Event) =
 
   # Check only first level children when found Widget run its doProcessEvent
   # that works recursively
-  var shouldResetCurrentHover = true
+  var shouldResetCurrentHover = if event of MouseMoveEvent: true else: false
   for i in countdown(node.children.len - 1, 0):
     let rootChild =  node.children[i]
     for comp in rootChild.components:
