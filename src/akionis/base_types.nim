@@ -333,6 +333,8 @@ proc rectInCamera(cam: Camera, rect: var Rect): OrientedRect =
   result.corners[3].x = c4.x
   result.corners[3].y = c4.y
 
+proc worldPointToLocal*(node: Node, worldPoint: Vector2): Vector2
+
 # Component ------------------------------------------------
 
 proc initComponent*(comp: Component, name: string) =
@@ -529,6 +531,44 @@ method calculateMinSize*(comp: Widget) =
 method updateLayout*(comp: Widget, availableSize: Size) {.base.} =
   ## Method to update layout, only used by layout components
   discard
+
+method processEvent*(comp: Widget, event: var Event) =
+  ## Event processing for this component
+  discard
+
+proc doProcessEvent*(comp: Widget, event: var Event) =
+  if event.isHandled:
+    return
+  if not comp.isExisting:
+    return
+  if not comp.isEnabled:
+    return
+  let parent = comp.parent
+  if parent.isNil:
+    return
+  var shouldProcess = true
+  # If Mouse event check mouseEventTarget and our size 
+  if event of MouseEvent:
+    let rootNode = parent.getRootNode()
+    if rootNode.isNil:
+      return
+    let mouseEvent = MouseEvent(event)
+    let localMousePos = parent.worldPointToLocal(mouseEvent.worldMousePos)
+    shouldProcess = pointInsideRect(comp.getWidgetArea(), localMousePos) or rootNode.mouseEventTarget == comp
+
+  if shouldProcess:
+    # First we check children if no child handles the event
+    # we run processEvent of this event
+    for child in parent.children:
+      for c in child.components:
+        if c of Widget:
+          doProcessEvent(Widget(c), event)
+          if event.isHandled:
+            return
+    
+    # children did not handle the event, so this comp tries
+    comp.processEvent(event)
+
 
 method update*(comp: Widget, deltaTime: float32) =
   ## Widget code that need to be run every frame,
