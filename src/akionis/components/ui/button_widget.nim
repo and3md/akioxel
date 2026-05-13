@@ -1,4 +1,5 @@
 import ../../base_types
+import ../../events
 import ../../colors
 import ../../matrices
 import ../../utils
@@ -50,32 +51,28 @@ method calculateMinSize*(comp: ButtonWidget) =
   applyMinMaxConstraint(newMinSize, comp.minConstraint, comp.maxConstraint)
   comp.minSize = newMinSize
 
-method update*(comp: ButtonWidget, deltaTime: float32) =
-  ## Updates button state
-  let parent = comp.parent
-  if parent.isNil:
-    return
-  let camera = getGame().getFirstCameraFromMask(comp.cameras)
-  if camera.isNil:
-    return
+method processEvent*(comp: ButtonWidget, event: Event) =
+  if event of MousePressEvent:
+    comp.state = ButtonState.Down
+  elif event of MouseReleaseEvent:
+    if not comp.onClick.isNil:
+      # code for future mouseEventTarget support
+      # to dismiss click when user move cursor from control
+      # let camera = getGame().getFirstActiveCameraFromMask(comp.cameras)
+      # if camera.isNil:
+      #   return
+      # let worldMousePoint = screenPointToWorld(camera, mousePos)
+      # let localMousePoint = parent.worldPointToLocal(worldMousePoint)
+      # if pointInsideRect(Rect(x: comp.offsetX.float32, y: comp.offsetY.float32, width: comp.size.width.float32, height: comp.size.height.float32), localMousePoint):
 
-  let mousePos = ray.getMousePosition()
-  let worldMousePoint = screenPointToWorld(camera, mousePos)
-  let localMousePoint = parent.worldPointToLocal(worldMousePoint)
-  
-
-  if pointInsideRect(Rect(x: comp.offsetX.float32, y: comp.offsetY.float32, width: comp.size.width.float32, height: comp.size.height.float32), localMousePoint):
-    if ray.isMouseButtonDown(ray.MouseButton.Left):
-      comp.state = ButtonState.Down
-    else:
-      comp.state = ButtonState.Hover
-      # onClick support
-      if ray.isMouseButtonReleased(ray.MouseButton.Left):
-        if not comp.onClick.isNil:
-          comp.onClick(comp)
-  else:
+      comp.onClick(comp)
+    comp.state = ButtonState.Hover
+  elif event of MouseExitEvent:
     comp.state = ButtonState.Up
+  elif event of MouseEnterEvent:
+    comp.state = ButtonState.Hover
 
+method update*(comp: ButtonWidget, deltaTime: float32) =
   # custom user update proc
   if not comp.onUpdate.isNil:
     comp.onUpdate(comp, deltaTime)
