@@ -29,14 +29,14 @@ proc newMousePressEvent(
 
 proc newMouseReleaseEvent(
     worldMousePos: Vector2, releasedButton: MouseButton
-): MouseReleasedEvent =
-  result = new (MouseReleasedEvent)
+): MouseReleaseEvent =
+  result = new (MouseReleaseEvent)
   result.worldMousePos = worldMousePos
   result.releasedButton = releasedButton
 
 proc newMouseMoveEvent(
     worldMousePos, deltaMove: Vector2
-): MouseReleasedEvent =
-  result = new (MouseReleasedEvent)
+): MouseMoveEvent =
+  result = new (MouseMoveEvent)
   result.worldMousePos = worldMousePos
   result.deltaMove = deltaMove
