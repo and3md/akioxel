@@ -9,7 +9,7 @@ type
     isHandled*: bool
 
   MouseEvent* = ref object of Event
-    worldMousePos*: Vector2
+    screenMousePos*: Vector2
 
   MousePressEvent* = ref object of MouseEvent
     pressedButton: MouseButton
@@ -21,22 +21,22 @@ type
     deltaMove: Vector2
 
 proc newMousePressEvent*(
-    worldMousePos: Vector2, pressedButton: MouseButton
+    screenMousePos: Vector2, pressedButton: MouseButton
 ): MousePressEvent =
   result = new (MousePressEvent)
-  result.worldMousePos = worldMousePos
+  result.screenMousePos = screenMousePos
   result.pressedButton = pressedButton
 
 proc newMouseReleaseEvent*(
-    worldMousePos: Vector2, releasedButton: MouseButton
+    screenMousePos: Vector2, releasedButton: MouseButton
 ): MouseReleaseEvent =
   result = new (MouseReleaseEvent)
-  result.worldMousePos = worldMousePos
+  result.screenMousePos = screenMousePos
   result.releasedButton = releasedButton
 
 proc newMouseMoveEvent*(
-    worldMousePos, deltaMove: Vector2
+    screenMousePos, deltaMove: Vector2
 ): MouseMoveEvent =
   result = new (MouseMoveEvent)
-  result.worldMousePos = worldMousePos
+  result.screenMousePos = screenMousePos
   result.deltaMove = deltaMove
