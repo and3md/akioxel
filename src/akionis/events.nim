@@ -20,21 +20,21 @@ type
   MouseMoveEvent* = ref object of MouseEvent
     deltaMove: Vector2
 
-proc newMousePressEvent(
+proc newMousePressEvent*(
     worldMousePos: Vector2, pressedButton: MouseButton
 ): MousePressEvent =
   result = new (MousePressEvent)
   result.worldMousePos = worldMousePos
   result.pressedButton = pressedButton
 
-proc newMouseReleaseEvent(
+proc newMouseReleaseEvent*(
     worldMousePos: Vector2, releasedButton: MouseButton
 ): MouseReleaseEvent =
   result = new (MouseReleaseEvent)
   result.worldMousePos = worldMousePos
   result.releasedButton = releasedButton
 
-proc newMouseMoveEvent(
+proc newMouseMoveEvent*(
     worldMousePos, deltaMove: Vector2
 ): MouseMoveEvent =
   result = new (MouseMoveEvent)
