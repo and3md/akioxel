@@ -54,6 +54,7 @@ method calculateMinSize*(comp: ButtonWidget) =
 method processEvent*(comp: ButtonWidget, event: Event) =
   if event of MousePressEvent:
     comp.state = ButtonState.Down
+    event.isHandled = true
   elif event of MouseReleaseEvent:
     if not comp.onClick.isNil:
       # code for future mouseEventTarget support
@@ -67,10 +68,13 @@ method processEvent*(comp: ButtonWidget, event: Event) =
 
       comp.onClick(comp)
     comp.state = ButtonState.Hover
+    event.isHandled = true
   elif event of MouseExitEvent:
     comp.state = ButtonState.Up
+    event.isHandled = true
   elif event of MouseEnterEvent:
     comp.state = ButtonState.Hover
+    event.isHandled = true
 
 method update*(comp: ButtonWidget, deltaTime: float32) =
   # custom user update proc
