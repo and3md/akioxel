@@ -56,22 +56,25 @@ method processEvent*(comp: ButtonWidget, event: Event) =
     comp.state = ButtonState.Down
     event.isHandled = true
   elif event of MouseReleaseEvent:
+    # released outside the widget?
+    let mouseEvent = MouseReleaseEvent(event)
+    let parent = comp.parent
+    if parent.isNil:
+      return
+    let camera = getGame().getFirstActiveCameraFromMask(comp.cameras)
+    if camera.isNil:
+      return
+    let worldMousePoint = screenPointToWorld(camera, mouseEvent.screenMousePos)
+    let localMousePoint = parent.worldPointToLocal(worldMousePoint)
+    let insideWidget = pointInsideRect(comp.getWidgetArea, localMousePoint)
+
     if not comp.onClick.isNil:
       # Button after mouse press event intercepts mouse move and release events
       # but when user move mouse outside the control we don't want
       # run onClick
-      let mouseEvent = MouseReleaseEvent(event)
-      let parent = comp.parent
-      if parent.isNil:
-        return
-      let camera = getGame().getFirstActiveCameraFromMask(comp.cameras)
-      if camera.isNil:
-        return
-      let worldMousePoint = screenPointToWorld(camera, mouseEvent.screenMousePos)
-      let localMousePoint = parent.worldPointToLocal(worldMousePoint)
-      if pointInsideRect(comp.getWidgetArea, localMousePoint):
+      if insideWidget:
         comp.onClick(comp)
-    comp.state = ButtonState.Hover
+    comp.state = if insideWidget: ButtonState.Hover else: ButtonState.Up
     event.isHandled = true
   elif event of MouseExitEvent:
     comp.state = ButtonState.Up
