@@ -35,12 +35,18 @@ proc newMousePressEvent*(
   result.screenMousePos = screenMousePos
   result.pressedButton = pressedButton
 
+proc pressedButton*(event: MousePressEvent): MouseButton =
+  return event.pressedButton
+
 proc newMouseReleaseEvent*(
     screenMousePos: Vector2, releasedButton: MouseButton
 ): MouseReleaseEvent =
   result = new (MouseReleaseEvent)
   result.screenMousePos = screenMousePos
   result.releasedButton = releasedButton
+
+proc releasedButton*(event: MouseReleaseEvent): MouseButton = 
+  return event.releasedButton
 
 proc newMouseMoveEvent*(
     screenMousePos, deltaMove: Vector2
