@@ -580,6 +580,10 @@ proc doProcessEvent*(comp: Widget, event: Event, shouldResetCurrentHover: var bo
             return
     # children did not handle the event, so this comp tries
     comp.processEvent(event)
+    if event.isHandled and event of MousePressEvent and MousePressEvent(event).pressedButton == MouseButton.Left:
+      let rootNode = parent.getRootNode()
+      if not rootNode.isNil:
+        rootNode.mouseEventTarget = comp
 
 
 method update*(comp: Widget, deltaTime: float32) =
@@ -1017,10 +1021,21 @@ proc doProcessEvent(state: State, event: Event) =
       return
   var shouldCheckHover = false
   if not state.rootNode.isNil:
-    if event of MouseMoveEvent:
-      state.rootNode.lastMouseHover = state.rootNode.currentMouseHover
-      shouldCheckHover = true
-    state.rootNode.doProcessEvent(event)
+    # check event mouse target
+    if not state.rootNode.mouseEventTarget.isNil and
+       (event of MouseMoveEvent or event of MouseReleaseEvent):
+      if event of MouseMoveEvent:
+        state.rootNode.mouseEventTarget.processEvent(event)
+      elif event of MouseReleaseEvent:
+        state.rootNode.mouseEventTarget.processEvent(event)
+        let releaseEvent = MouseReleaseEvent(event)
+        if releaseEvent.releasedButton == MouseButton.Left:
+          state.rootNode.mouseEventTarget = nil
+    else:
+      if event of MouseMoveEvent:
+        state.rootNode.lastMouseHover = state.rootNode.currentMouseHover
+        shouldCheckHover = true
+      state.rootNode.doProcessEvent(event)
   if event.isHandled:
     if shouldCheckHover:
       if state.rootNode.lastMouseHover != state.rootNode.currentMouseHover:
