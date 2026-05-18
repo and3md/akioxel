@@ -1,4 +1,5 @@
 import ../../base_types
+import ../../events
 import ../../utils
 import ../../colors
 import ../../matrices
@@ -188,37 +189,62 @@ method draw*(comp: ScrollBarWidget, camera: Camera) =
     comp.thumbColor[comp.thumbState],
   )
 
-
-
-method update*(comp: ScrollBarWidget, deltaTime: float32) =
-  ## Updates button state
+proc tryGetMouseLocalPosFromEvent(
+    comp: ScrollBarWidget, mouseEvent: MouseEvent, localPos: var Vector2
+): bool =
   let parent = comp.parent
   if parent.isNil:
-    return
+    return false
   let camera = getGame().getFirstCameraFromMask(comp.cameras)
   if camera.isNil:
-    return
 
-  let mousePos = ray.getMousePosition()
-  let worldMousePoint = screenPointToWorld(camera, mousePos)
-  let localMousePoint = parent.worldPointToLocal(worldMousePoint)
+    return false
+  let worldMousePoint = screenPointToWorld(camera, mouseEvent.screenMousePos)
+  localPos = parent.worldPointToLocal(worldMousePoint)
+  return true
 
-  let pixelThumbRect = comp.getThumbPixelRect()
-
-  if pointInsideRect(pixelThumbRect, localMousePoint):
-    if ray.isMouseButtonDown(ray.MouseButton.Left):
-      if comp.thumbState == ButtonState.Down:
-        # was down before check mouse movement
-        let delta = getValueForOrientation(ray.getMouseDelta(), comp.orientation)
-        #echo "delta ", delta
-        comp.mouseDeltaAccum += delta
-        if comp.mouseDeltaAccum > 1 or comp.mouseDeltaAccum < -1:
-          comp.`value=`(max(0, min(comp.maxValue - comp.thumbSize, comp.value + comp.mouseDeltaAccum.int32)))
-          comp.mouseDeltaAccum = comp.mouseDeltaAccum - comp.mouseDeltaAccum.int32.float32
-      else:  
+method processEvent*(comp: ScrollBarWidget, event: Event) =
+  if event of MousePressEvent:
+    let mouseEvent = MousePressEvent(event)
+    mouseEvent.isHandled = true
+    if mouseEvent.pressedButton == MouseButton.Left:
+      # left mouse button press button somewhere in scrollbar
+      var localMousePos: Vector2
+      if not tryGetMouseLocalPosFromEvent(comp, mouseEvent, localMousePos):
+        return
+      let pixelThumbRect = comp.getThumbPixelRect()
+      if pointInsideRect(pixelThumbRect, localMousePos):
         comp.thumbState = ButtonState.Down
+  elif event of MouseReleaseEvent:
+    let mouseReleaseEvent = MouseReleaseEvent(event)
+    mouseReleaseEvent.isHandled = true
+    if mouseReleaseEvent.releasedButton == MouseButton.Left:
+      if comp.thumbState == ButtonState.Down:
+        var localMousePos: Vector2
+        if not tryGetMouseLocalPosFromEvent(comp, mouseReleaseEvent, localMousePos):
+          return
+        let pixelThumbRect = comp.getThumbPixelRect()
+        if pointInsideRect(pixelThumbRect, localMousePos):
+          comp.thumbState = ButtonState.Hover
+        else:
+          comp.thumbState = ButtonState.Up
+  elif event of MouseMoveEvent:
+    let mouseEvent = MouseMoveEvent(event)
+    mouseEvent.isHandled = true
+    if comp.thumbState == ButtonState.Down:
+      let delta = getValueForOrientation(mouseEvent.deltaMove, comp.orientation)
+      comp.`value=`(
+        max(0, min(comp.maxValue - comp.thumbSize, comp.value + delta.int32))
+      )
     else:
-      comp.thumbState = ButtonState.Hover
-  else:
+      var localMousePos: Vector2
+      if not tryGetMouseLocalPosFromEvent(comp, mouseEvent, localMousePos):
+        return
+      let pixelThumbRect = comp.getThumbPixelRect()
+      if pointInsideRect(pixelThumbRect, localMousePos):
+        comp.thumbState = ButtonState.Hover
+      else:
+        comp.thumbState = ButtonState.Up
+  elif event of MouseExitEvent:
     comp.thumbState = ButtonState.Up
-    comp.mouseDeltaAccum = 0'f32
+    event.isHandled = true
