@@ -8,26 +8,27 @@ import button_state
 import orientation
 from raylib as ray import nil
 
-var lastGenNameNumber: uint32 = 0 
+var lastGenNameNumber: uint32 = 0
 
-type
-  ScrollBarWidget* = ref object of Widget
-    orientation: Orientation
-    maxValue: int32 = 100
-    value: int32 = 0
-    onValueChanged*: proc(newValue: int32)
-    minThumbSize: int32 = 10
-    thumbSize: int32 = 10
-    backgroundColor: Color
-    thumbColor: array[ButtonState, Color]
-    thumbState: ButtonState
-    mouseDeltaAccum: float32
+type ScrollBarWidget* = ref object of Widget
+  orientation: Orientation
+  maxValue: int32 = 100
+  value: int32 = 0
+  onValueChanged*: proc(newValue: int32)
+  minThumbSize: int32 = 10
+  thumbSize: int32 = 10
+  backgroundColor: Color
+  thumbColor: array[ButtonState, Color]
+  thumbState: ButtonState
+  mouseDeltaAccum: float32
 
 const scrollBarThicknes = 15
 
 proc `orientation=`*(comp: ScrollBarWidget, newOrientation: Orientation)
 
-proc newScrollBarWidget*(parentNode: Node, orientation: Orientation, name: string = ""): ScrollBarWidget =
+proc newScrollBarWidget*(
+    parentNode: Node, orientation: Orientation, name: string = ""
+): ScrollBarWidget =
   result = new(ScrollBarWidget)
   initWidget(result, generateName(name, "ScrollBarWidget", lastGenNameNumber))
   # by default orientation is Horizontal so we should also set widthFactor to this orientation
@@ -41,8 +42,10 @@ proc newScrollBarWidget*(parentNode: Node, orientation: Orientation, name: strin
   result.thumbState = ButtonState.Up
   if not parentNode.isNil:
     parentNode.addComponent(result)
-  
-proc newNodeWithScrollBarWidget*(parentNode: Node, orientation: Orientation, widgetName: string = ""): tuple[node: Node, widget: ScrollBarWidget] =
+
+proc newNodeWithScrollBarWidget*(
+    parentNode: Node, orientation: Orientation, widgetName: string = ""
+): tuple[node: Node, widget: ScrollBarWidget] =
   ## Shortcut create widget with node and add it to parent node
   result.node = newNode()
   result.widget = newScrollBarWidget(result.node, orientation, widgetName)
@@ -110,27 +113,30 @@ proc getThumbPixelRect(comp: ScrollBarWidget): Rect =
     else:
       comp.size.height.float32
 
-  let pixelUnitValue =  pixelWidth / comp.maxValue.float32
+  let pixelUnitValue = pixelWidth / comp.maxValue.float32
   let pixelValue = pixelUnitValue * comp.value.float32
   let pixelThumbSize = pixelUnitValue * comp.thumbSize.float32
 
-  result.x = if comp.orientation == Orientation.Horizontal:
-    comp.offsetX + pixelValue
-  else:
-    comp.offsetX
-  result.y = if comp.orientation == Orientation.Horizontal:
-    comp.offsetY
-  else:
-    comp.offsetY + pixelValue
-  result.width = if comp.orientation == Orientation.Horizontal:
-    pixelThumbSize
-  else:
-    comp.size.width.float32
-  result.height = if comp.orientation == Orientation.Horizontal:
-    comp.size.height.float32
-  else:
-    pixelThumbSize
-  
+  result.x =
+    if comp.orientation == Orientation.Horizontal:
+      comp.offsetX + pixelValue
+    else:
+      comp.offsetX
+  result.y =
+    if comp.orientation == Orientation.Horizontal:
+      comp.offsetY
+    else:
+      comp.offsetY + pixelValue
+  result.width =
+    if comp.orientation == Orientation.Horizontal:
+      pixelThumbSize
+    else:
+      comp.size.width.float32
+  result.height =
+    if comp.orientation == Orientation.Horizontal:
+      comp.size.height.float32
+    else:
+      pixelThumbSize
 
 method draw*(comp: ScrollBarWidget, camera: Camera) =
   let data = comp.decomposedTransform(camera)
@@ -140,24 +146,16 @@ method draw*(comp: ScrollBarWidget, camera: Camera) =
 
   # draw background
   ray.drawRectangle(
-    ray.Rectangle(
-      x: data.x,
-      y: data.y,
-      width: scaledWidth,
-      height: scaledHeight,
-    ),
+    ray.Rectangle(x: data.x, y: data.y, width: scaledWidth, height: scaledHeight),
     ray.Vector2(x: 0.0, y: 0.0),
     radToDeg(data.angle),
     comp.backgroundColor,
   )
 
   let pixelWidth =
-    if comp.orientation == Orientation.Horizontal:
-      scaledWidth
-    else:
-      scaledHeight
+    if comp.orientation == Orientation.Horizontal: scaledWidth else: scaledHeight
 
-  let pixelUnitValue =  pixelWidth / comp.maxValue.float32
+  let pixelUnitValue = pixelWidth / comp.maxValue.float32
   let pixelValue = pixelUnitValue * comp.value.float32
   let pixelThumbSize = pixelUnitValue * comp.thumbSize.float32
 
@@ -173,16 +171,10 @@ method draw*(comp: ScrollBarWidget, camera: Camera) =
           data.y
         else:
           data.y + pixelValue,
-      width: 
-        if comp.orientation == Orientation.Horizontal:
-          pixelThumbSize
-        else:
-          scaledWidth,
+      width:
+        if comp.orientation == Orientation.Horizontal: pixelThumbSize else: scaledWidth,
       height:
-        if comp.orientation == Orientation.Horizontal:
-          scaledHeight
-        else:
-          pixelThumbSize
+        if comp.orientation == Orientation.Horizontal: scaledHeight else: pixelThumbSize,
     ),
     ray.Vector2(x: 0.0, y: 0.0),
     radToDeg(data.angle),
@@ -197,7 +189,6 @@ proc tryGetMouseLocalPosFromEvent(
     return false
   let camera = getGame().getFirstCameraFromMask(comp.cameras)
   if camera.isNil:
-
     return false
   let worldMousePoint = screenPointToWorld(camera, mouseEvent.screenMousePos)
   localPos = parent.worldPointToLocal(worldMousePoint)
