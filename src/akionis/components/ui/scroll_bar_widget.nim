@@ -20,7 +20,6 @@ type ScrollBarWidget* = ref object of Widget
   backgroundColor: Color
   thumbColor: array[ButtonState, Color]
   thumbState: ButtonState
-  mouseDeltaAccum: float32
 
 const scrollBarThicknes = 15
 
