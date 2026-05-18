@@ -568,7 +568,7 @@ proc doProcessEvent*(comp: Widget, event: Event, shouldResetCurrentHover: var bo
     if event of MouseMoveEvent:
       if shouldProcess:
         rootNode.currentMouseHover = comp
-  
+
   if shouldProcess:
     # First we check children if no child handles the event
     # we run processEvent of this event
@@ -580,11 +580,11 @@ proc doProcessEvent*(comp: Widget, event: Event, shouldResetCurrentHover: var bo
             return
     # children did not handle the event, so this comp tries
     comp.processEvent(event)
-    if event.isHandled and event of MousePressEvent and MousePressEvent(event).pressedButton == MouseButton.Left:
+    if event.isHandled and event of MousePressEvent and
+        MousePressEvent(event).pressedButton == MouseButton.Left:
       let rootNode = parent.getRootNode()
       if not rootNode.isNil:
         rootNode.mouseEventTarget = comp
-
 
 method update*(comp: Widget, deltaTime: float32) =
   ## Widget code that need to be run every frame,
@@ -751,9 +751,7 @@ proc getFirstChildWithComponentOfType*[T](
       return some((node: child, comp: comp))
   return none(tuple[node: Node, comp: T])
 
-proc getFirstChildWithWidget*(
-    node: Node
-): Option[tuple[node: Node, comp: Widget]] =
+proc getFirstChildWithWidget*(node: Node): Option[tuple[node: Node, comp: Widget]] =
   ## Returns first child with Widget
   return getFirstChildWithComponentOfType[Widget](node)
 
@@ -899,7 +897,7 @@ proc doProcessEvent(node: RootNode, event: Event) =
   # that works recursively
   var shouldResetCurrentHover = if event of MouseMoveEvent: true else: false
   for i in countdown(node.children.len - 1, 0):
-    let rootChild =  node.children[i]
+    let rootChild = node.children[i]
     for comp in rootChild.components:
       if comp of Widget:
         doProcessEvent(Widget(comp), event, shouldResetCurrentHover)
@@ -1023,7 +1021,7 @@ proc doProcessEvent(state: State, event: Event) =
   if not state.rootNode.isNil:
     # check event mouse target
     if not state.rootNode.mouseEventTarget.isNil and
-       (event of MouseMoveEvent or event of MouseReleaseEvent):
+        (event of MouseMoveEvent or event of MouseReleaseEvent):
       if event of MouseMoveEvent:
         state.rootNode.mouseEventTarget.processEvent(event)
       elif event of MouseReleaseEvent:
@@ -1040,17 +1038,25 @@ proc doProcessEvent(state: State, event: Event) =
     if shouldCheckHover:
       if state.rootNode.lastMouseHover != state.rootNode.currentMouseHover:
         if not state.rootNode.lastMouseHover.isNil:
-          state.rootNode.lastMouseHover.processEvent(newMouseExitEvent(ray.getMousePosition()))
+          state.rootNode.lastMouseHover.processEvent(
+            newMouseExitEvent(ray.getMousePosition())
+          )
         if not state.rootNode.currentMouseHover.isNil:
-          state.rootNode.currentMouseHover.processEvent(newMouseEnterEvent(ray.getMousePosition()))
+          state.rootNode.currentMouseHover.processEvent(
+            newMouseEnterEvent(ray.getMousePosition())
+          )
     return
   state.processEvent(event)
   if shouldCheckHover:
     if state.rootNode.lastMouseHover != state.rootNode.currentMouseHover:
       if not state.rootNode.lastMouseHover.isNil:
-        state.rootNode.lastMouseHover.processEvent(newMouseExitEvent(ray.getMousePosition()))
+        state.rootNode.lastMouseHover.processEvent(
+          newMouseExitEvent(ray.getMousePosition())
+        )
       if not state.rootNode.currentMouseHover.isNil:
-        state.rootNode.currentMouseHover.processEvent(newMouseEnterEvent(ray.getMousePosition()))
+        state.rootNode.currentMouseHover.processEvent(
+          newMouseEnterEvent(ray.getMousePosition())
+        )
 
 proc doUpdate(state: State, deltaTime: float32) =
   ## Takes care of correct updating everything
@@ -1150,11 +1156,11 @@ proc openRootState*(game: Game, state: State) =
 
 proc handleEvents*(game: Game) =
   ## Should run only once per frame
-  
+
   if game.state.isNil:
     # Do nothing when there is no state
     return
-  
+
   # used in many events
   let mouseScreenPos = ray.getMousePosition()
 
