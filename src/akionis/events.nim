@@ -55,6 +55,9 @@ proc newMouseMoveEvent*(
   result.screenMousePos = screenMousePos
   result.deltaMove = deltaMove
 
+proc deltaMove*(event: MouseMoveEvent): Vector2 = 
+  return event.deltaMove
+
 proc newMouseWheelMoveEvent*(
     screenMousePos, deltaWheelMove: Vector2
 ): MouseWheelMoveEvent =
